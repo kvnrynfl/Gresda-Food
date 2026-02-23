@@ -20,7 +20,7 @@ class CustomerController extends Controller {
         }
         
         // Pass all carts as recent orders for now, will filter in view or model
-        $data['recent_orders'] = $orderModel->getAllCart();
+        $data['recent_orders'] = $orderModel->getOrdersByUser($_SESSION['user_id']);
 
         $this->view('customer/profile', $data);
     }
@@ -137,12 +137,29 @@ class CustomerController extends Controller {
     }
 
     public function orders() {
-        $data['orders'] = $this->model('OrderModel')->getAllCart(); 
+        $data['orders'] = $this->model('OrderModel')->getOrdersByUser($_SESSION['user_id']); 
         $this->view('customer/orders', $data);
     }
     
     public function orderDetails($id) {
         $orderModel = $this->model('OrderModel');
+        $activeCart = $orderModel->getActiveCartByUser($_SESSION['user_id']);
+        
+        // Security check: Verify order belongs to this user
+        $userOrders = $orderModel->getOrdersByUser($_SESSION['user_id']);
+        $isOwner = false;
+        foreach($userOrders as $order) {
+            if($order['order_id'] == $id) {
+                $isOwner = true;
+                break;
+            }
+        }
+        
+        if(!$isOwner) {
+            $this->redirect('/customer/orders');
+            return;
+        }
+
         $data['details'] = $orderModel->getOrderDetails($id);
         $data['order_id'] = $id;
         $this->view('customer/order_details', $data); // We'll just build a basic view next

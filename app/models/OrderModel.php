@@ -11,6 +11,12 @@ class OrderModel extends Database {
         return $this->resultSet();
     }
 
+    public function getOrdersByUser($user_id) {
+        $this->query("SELECT * FROM tbl_cart WHERE user_id = :user_id ORDER BY cart_id DESC");
+        $this->bind(':user_id', $user_id);
+        return $this->resultSet();
+    }
+
     public function getActiveCartByUser($user_id) {
         $this->query("SELECT * FROM tbl_cart WHERE user_id = :user_id AND status = 'Cart'");
         $this->bind(':user_id', $user_id);
