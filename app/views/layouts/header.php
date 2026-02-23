@@ -28,46 +28,9 @@
         }
     </script>
     </script>
-    <style>
-        /* Preloader Styles */
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #ffffff;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-        }
-        #preloader.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-        .loader-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #e5e7eb; /* gray-200 */
-            border-top: 5px solid #06b6d4; /* primary cyan */
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased font-sans flex flex-col min-h-screen">
     
-    <!-- Preloader -->
-    <div id="preloader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <!-- Navigation Bar -->
     <nav id="navbar" class="transition-all duration-300 fixed w-full z-50 <?php echo (isset($title) && $title === 'Home') ? 'bg-transparent py-4 text-white' : 'bg-white shadow-md text-gray-800 py-0 border-b border-gray-100'; ?>">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -133,18 +96,6 @@
     <!-- Navbar Scroll Script specific constraints for Homepage -->
     <?php if (isset($title) && $title === 'Home'): ?>
     <script>
-        // Preloader fade out
-        window.addEventListener('load', function() {
-            const preloader = document.getElementById('preloader');
-            if (preloader) {
-                preloader.classList.add('hidden');
-                // Optional: remove from DOM after transition
-                setTimeout(() => {
-                    preloader.style.display = 'none';
-                }, 500);
-            }
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
             const navbar = document.getElementById('navbar');
             const navLinks = document.querySelectorAll('.nav-link');

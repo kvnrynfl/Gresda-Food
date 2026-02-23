@@ -5,7 +5,9 @@
     <div class="absolute inset-0 z-0 bg-black/60"></div>
     
     <!-- Dynamic Background Image Container -->
-    <div id="hero-bg" class="absolute inset-0 z-[-1] bg-cover bg-center transition-all duration-1000 ease-in-out" style="background-image: url('<?= BASEURL ?>/images/aesthetic/home-bg.jpg');"></div>
+    <div id="hero-bg-container" class="absolute inset-0 z-[-1] overflow-hidden">
+        <!-- JS will inject layers here -->
+    </div>
     
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         <div class="bg-black/50 backdrop-blur-sm p-10 md:p-14 rounded-3xl shadow-2xl flex flex-col items-center max-w-4xl border border-white/10">
@@ -147,27 +149,35 @@
         }
 
         // --- Dynamic Hero Background Logic ---
-        const heroBg = document.getElementById('hero-bg');
-        if (heroBg) {
+        const heroBgContainer = document.getElementById('hero-bg-container');
+        if (heroBgContainer) {
             const baseUrl = '<?= BASEURL ?>';
             const images = [
                 baseUrl + '/images/aesthetic/home-bg.jpg',
+                baseUrl + '/images/aesthetic/00.jpg',
                 baseUrl + '/images/aesthetic/01.jpg',
+                baseUrl + '/images/aesthetic/02.jpg',
+                baseUrl + '/images/aesthetic/03.jpg',
                 baseUrl + '/images/aesthetic/04.jpg',
                 baseUrl + '/images/aesthetic/05.jpg'
             ];
             
-            // Preload images
-            images.forEach(src => {
-                const img = new Image();
-                img.src = src;
+            // Create image layers
+            const layers = images.map((src, index) => {
+                const div = document.createElement('div');
+                div.className = `absolute inset-0 z-[-1] bg-cover bg-center transition-opacity duration-1000 ease-in-out bg-zoom ${index === 0 ? 'opacity-100' : 'opacity-0'}`;
+                div.style.backgroundImage = `url('${src}')`;
+                heroBgContainer.appendChild(div);
+                return div;
             });
 
             let currentImageIndex = 0;
 
             setInterval(() => {
-                currentImageIndex = (currentImageIndex + 1) % images.length;
-                heroBg.style.backgroundImage = `url('${images[currentImageIndex]}')`;
+                const nextIndex = (currentImageIndex + 1) % images.length;
+                layers[currentImageIndex].classList.replace('opacity-100', 'opacity-0');
+                layers[nextIndex].classList.replace('opacity-0', 'opacity-100');
+                currentImageIndex = nextIndex;
             }, 5000);
         }
     });
@@ -175,6 +185,14 @@
 
 <!-- Floating CSS Animations and Utilities -->
 <style>
+    @keyframes zoomBackground {
+        0% { transform: scale(1); }
+        100% { transform: scale(1.15); }
+    }
+    .bg-zoom {
+        animation: zoomBackground 10s linear infinite alternate;
+    }
+    
     @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }

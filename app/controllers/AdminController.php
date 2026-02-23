@@ -8,6 +8,10 @@ class AdminController extends Controller {
         }
     }
 
+    public function index() {
+        $this->dashboard();
+    }
+
     public function dashboard() {
         $categoryModel = $this->model('CategoryModel');
         $foodModel = $this->model('FoodModel');
