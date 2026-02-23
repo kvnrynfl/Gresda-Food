@@ -37,7 +37,7 @@
             </div>
         </div>
         <div class="text-center text-gray-500 mt-12 pt-6 border-t border-gray-700 text-sm">
-            &copy; <?= date('Y') ?> Gresda Food & Beverage. Hak cipta dilindungi undang-undang. Dirancang untuk V2 MVC.
+            &copy; <?= date('Y') ?> Gresda Food & Beverage. Hak cipta dilindungi undang-undang.
         </div>
     </footer>
 
