@@ -58,8 +58,7 @@ include '../app/views/layouts/header.php';
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Alamat Email</label>
-                        <input type="email" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>" required class="w-full px-4 py-3 bg-gray-100 border border-gray-200 text-gray-500 rounded-xl focus:outline-none" readonly title="Email tidak dapat diubah langsung karena alasan keamanan">
-                        <p class="text-xs text-gray-400 mt-2"><i class="fas fa-info-circle"></i> Hubungi dukungan untuk mengubah email utama Anda.</p>
+                        <input type="email" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
                     </div>
 
                     <hr class="my-6 border-gray-100">

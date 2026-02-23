@@ -34,13 +34,14 @@ class UserModel extends Database {
     
     public function updateProfile($id, $data) {
         if(isset($data['img_user'])) {
-            $this->query("UPDATE tbl_users SET full_name = :full_name, username = :username, img_user = :img_user WHERE id = :id");
+            $this->query("UPDATE tbl_users SET full_name = :full_name, username = :username, email = :email, img_user = :img_user WHERE id = :id");
             $this->bind(':img_user', $data['img_user']);
         } else {
-            $this->query("UPDATE tbl_users SET full_name = :full_name, username = :username WHERE id = :id");
+            $this->query("UPDATE tbl_users SET full_name = :full_name, username = :username, email = :email WHERE id = :id");
         }
         $this->bind(':full_name', $data['full_name']);
         $this->bind(':username', $data['username']);
+        $this->bind(':email', $data['email']);
         $this->bind(':id', $id);
         return $this->execute();
     }

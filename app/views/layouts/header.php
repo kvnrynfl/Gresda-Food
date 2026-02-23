@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
+    <!-- SweetAlert2 Global -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <!-- Tailwind CSS (CDN for rapid delivery as requested) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -30,7 +33,31 @@
     </script>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased font-sans flex flex-col min-h-screen">
-    
+
+    <?php if(isset($_SESSION['flash_error']) || isset($_SESSION['flash_success'])): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            <?php if(isset($_SESSION['flash_error'])): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '<?= addslashes($_SESSION['flash_error']) ?>',
+                confirmButtonColor: '#06b6d4'
+            });
+            <?php unset($_SESSION['flash_error']); endif; ?>
+            
+            <?php if(isset($_SESSION['flash_success'])): ?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '<?= addslashes($_SESSION['flash_success']) ?>',
+                confirmButtonColor: '#06b6d4'
+            });
+            <?php unset($_SESSION['flash_success']); endif; ?>
+        });
+    </script>
+    <?php endif; ?>
+
     <!-- Navigation Bar -->
     <nav id="navbar" class="transition-all duration-300 fixed w-full z-50 <?php echo (isset($title) && $title === 'Home') ? 'bg-transparent py-4 text-white' : 'bg-white shadow-md text-gray-800 py-0 border-b border-gray-100'; ?>">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,7 +108,9 @@
                                 <?= $_SESSION['username'] ?>
                             </button>
                             <div class="absolute right-0 w-48 mt-2 py-2 bg-white border border-gray-100 rounded-md shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                                <a href="<?= BASEURL ?>/customer" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">Profil Saya</a>
+                                <a href="<?= BASEURL ?>/customer/editProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">Edit Profil</a>
+                                <a href="<?= BASEURL ?>/customer/changePassword" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">Ganti Password</a>
+                                <a href="<?= BASEURL ?>/customer/orders" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">Riwayat Transaksi</a>
                                 <a href="<?= BASEURL ?>/auth/logout" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">Keluar</a>
                             </div>
                         </div>
