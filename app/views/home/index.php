@@ -118,9 +118,18 @@
             ?>
             <div class="bg-gray-50 rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition">
                 <div class="flex items-center gap-1 mb-4 text-yellow-500">
-                    <?php for($i=1; $i<=5; $i++): ?>
-                        <i class="fas fa-star <?= $i <= $review['rating'] ? '' : 'text-gray-300' ?>"></i>
-                    <?php endfor; ?>
+                    <?php 
+                    $rating = (float)$review['rating'];
+                    for($i=1; $i<=5; $i++): 
+                        if ($rating >= $i) {
+                            echo '<i class="fas fa-star"></i>';
+                        } elseif ($rating >= $i - 0.5) {
+                            echo '<i class="fas fa-star-half-alt"></i>';
+                        } else {
+                            echo '<i class="fas fa-star text-gray-300"></i>';
+                        }
+                    endfor; 
+                    ?>
                 </div>
                 <p class="text-gray-700 italic mb-6 leading-relaxed line-clamp-4">"<?= htmlspecialchars($review['message']) ?>"</p>
                 <div class="flex items-center gap-4 mt-auto">
