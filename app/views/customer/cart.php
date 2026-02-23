@@ -54,7 +54,7 @@
                                     </div>
                                     <div class="col-span-1 sm:col-span-2 flex justify-between sm:justify-center items-center">
                                         <span class="sm:hidden font-semibold text-gray-500">Harga:</span>
-                                        <span class="text-gray-700 font-medium">Rp <?= number_format($item['price'], 0, ',', '.') ?></span>
+                                        <span class="text-gray-700 font-medium">Rp <?= number_format(($item['price'] ?? 0) * 1000, 0, ',', '.') ?></span>
                                     </div>
                                     <div class="col-span-1 sm:col-span-2 flex justify-between sm:justify-center items-center">
                                         <span class="sm:hidden font-semibold text-gray-500">Kuantitas:</span>
@@ -67,7 +67,7 @@
                                     </div>
                                     <div class="col-span-1 sm:col-span-2 flex justify-between sm:justify-end items-center">
                                         <span class="sm:hidden font-semibold text-gray-500">Subtotal:</span>
-                                        <span class="text-secondary font-bold text-lg">Rp <?= number_format($subtotal, 0, ',', '.') ?></span>
+                                        <span class="text-secondary font-bold text-lg">Rp <?= number_format($subtotal * 1000, 0, ',', '.') ?></span>
                                     </div>
 
                                     <!-- Remove Button -->
@@ -90,11 +90,11 @@
                         <div class="space-y-4 mb-6">
                             <div class="flex justify-between text-gray-600">
                                 <span>Subtotal</span>
-                                <span class="font-medium text-gray-800">Rp <?= number_format($totalPrice, 0, ',', '.') ?></span>
+                                <span class="font-medium text-gray-800">Rp <?= number_format($totalPrice * 1000, 0, ',', '.') ?></span>
                             </div>
                             <div class="flex justify-between text-gray-600">
                                 <span>Pajak (10%)</span>
-                                <span class="font-medium text-gray-800">Rp <?= number_format($totalPrice * 0.1, 0, ',', '.') ?></span>
+                                <span class="font-medium text-gray-800">Rp <?= number_format(($totalPrice * 1000) * 0.1, 0, ',', '.') ?></span>
                             </div>
                             <div class="flex justify-between text-gray-600">
                                 <span>Pengiriman</span>
@@ -105,7 +105,7 @@
                         <div class="border-t border-gray-200 pt-4 mb-8">
                             <div class="flex justify-between items-center">
                                 <span class="text-lg font-bold text-gray-800">Total</span>
-                                <span class="text-3xl font-extrabold text-primary">Rp <?= number_format(($totalPrice * 1.1) + 15000, 0, ',', '.') ?></span>
+                                <span class="text-3xl font-extrabold text-primary">Rp <?= number_format((($totalPrice * 1000) * 1.1) + 15000, 0, ',', '.') ?></span>
                             </div>
                             <p class="text-xs text-gray-400 mt-1 text-right">Termasuk pajak & pengiriman</p>
                         </div>
