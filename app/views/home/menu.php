@@ -88,7 +88,11 @@
                 <?php else: ?>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <?php foreach($foods as $food): ?>
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100/50 hover:shadow-2xl hover:border-cyan-100 transition-all duration-300 flex flex-col overflow-hidden group transform hover:-translate-y-1">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100/50 hover:shadow-2xl hover:border-cyan-100 transition-all duration-300 flex flex-col overflow-hidden group transform hover:-translate-y-1 cursor-pointer food-card"
+                         data-name="<?= htmlspecialchars($food['name']) ?>"
+                         data-price="Rp <?= number_format($food['price'] ?? 0, 0, ',', '.') ?>"
+                         data-image="<?= BASEURL ?>/images/foods/<?= htmlspecialchars($food['image_name']) ?>"
+                         data-description="<?= htmlspecialchars($food['description']) ?>">
                         <div class="relative h-64 overflow-hidden bg-gray-100">
                             <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent group-hover:from-gray-900/60 transition-all z-10"></div>
                             <img src="<?= BASEURL ?>/images/foods/<?= htmlspecialchars($food['image_name']) ?>" alt="<?= htmlspecialchars($food['name']) ?>" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 ease-in-out" onerror="this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'">
@@ -100,8 +104,8 @@
                         </div>
                         <div class="p-6 flex-grow flex flex-col relative bg-white">
                             <div class="mb-4 flex-grow">
-                                <h4 class="text-xl font-bold text-gray-800 mb-2 leading-tight group-hover:text-cyan-700 transition-colors line-clamp-2"><?= htmlspecialchars($food['name']) ?></h4>
-                                <p class="text-gray-500 text-sm leading-relaxed line-clamp-3"><?= htmlspecialchars($food['description']) ?></p>
+                                <h4 class="text-xl font-bold text-gray-800 leading-tight group-hover:text-cyan-700 transition-colors line-clamp-2"><?= htmlspecialchars($food['name']) ?></h4>
+                                <!-- Deskripsi disembunyikan sesuai permintaan, ditampilkan di popup -->
                             </div>
                             <div class="mt-auto pt-4 border-t border-gray-50">
                                 <form action="<?= BASEURL ?>/customer/addToCart" method="POST">
@@ -127,6 +131,39 @@
         urlParams.set('sort', val);
         window.location.search = urlParams.toString();
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.food-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Ignore clicks on Add To Cart button
+                if (e.target.closest('form')) return;
+
+                const name = card.getAttribute('data-name');
+                const price = card.getAttribute('data-price');
+                const img = card.getAttribute('data-image');
+                const desc = card.getAttribute('data-description');
+
+                Swal.fire({
+                    html: `
+                        <div class="text-left mt-2">
+                            <img src="${img}" class="w-full h-64 object-cover rounded-2xl mb-6 shadow-sm bg-gray-100" alt="${name}" onerror="this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'">
+                            <h2 class="text-2xl font-black text-gray-800 mb-2">${name}</h2>
+                            <p class="text-primary font-bold text-xl mb-4">${price}</p>
+                            <div class="w-12 h-1 bg-gray-200 rounded-full mb-4"></div>
+                            <p class="text-gray-600 leading-relaxed text-sm whitespace-pre-wrap">${desc}</p>
+                        </div>
+                    `,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Tutup Detail',
+                    confirmButtonColor: '#2D3748',
+                    customClass: {
+                        popup: 'rounded-[2rem] p-2',
+                        confirmButton: 'rounded-full px-8 py-3 font-semibold'
+                    }
+                });
+            });
+        });
+    });
 </script>
 
 <style>
