@@ -61,6 +61,52 @@ ob_start();
         </div>
     </div>
     
+    <?php if(isset($order) && $order['status'] !== 'Cart'): ?>
+    <?php
+        $steps = ['Payment' => 'Menunggu Pembayaran', 'Confirmed' => 'Dikonfirmasi', 'Delivery' => 'Dikirim', 'Finished' => 'Selesai'];
+        $currentStatus = $order['status'];
+        $isCanceled = ($currentStatus === 'Canceled');
+        $statusKeys = array_keys($steps);
+        $currentIndex = array_search($currentStatus, $statusKeys);
+        if ($currentIndex === false && !$isCanceled) $currentIndex = -1;
+    ?>
+    <div class="px-4 sm:px-8 py-8 border-b border-gray-100 bg-gray-50/30">
+        <div class="max-w-3xl mx-auto">
+            <?php if($isCanceled): ?>
+                <div class="text-center py-4">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600 mb-3 border-4 border-white shadow-sm">
+                        <i class="fas fa-times text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-red-700 text-lg">Pesanan Dibatalkan</h3>
+                    <p class="text-gray-500 text-sm mt-1 mb-2">Proses pesanan ini telah dihentikan.</p>
+                </div>
+            <?php else: ?>
+            <div class="relative flex justify-between sm:w-10/12 md:w-full mx-auto pb-8 sm:pb-12">
+                <div class="absolute left-0 top-5 transform -translate-y-1/2 w-full h-1 bg-gray-200 z-0 rounded-full"></div>
+                <div class="absolute left-0 top-5 transform -translate-y-1/2 h-1 bg-primary z-0 rounded-full transition-all duration-1000 ease-out" style="width: <?= $currentIndex > 0 ? ($currentIndex / (count($steps) - 1)) * 100 : 0 ?>%"></div>
+                
+                <?php foreach($steps as $key => $label): 
+                    $stepIndex = array_search($key, $statusKeys);
+                    $isCompleted = $stepIndex <= $currentIndex;
+                    $isCurrent = $stepIndex === $currentIndex;
+                ?>
+                <div class="relative z-10 flex flex-col items-center group">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition-all duration-500 <?= $isCompleted ? 'bg-primary text-white ring-4 ring-cyan-50' : 'bg-white text-gray-400 border-2 border-gray-200' ?> <?= $isCurrent ? 'ring-4 ring-cyan-100 scale-110 !font-extrabold shadow-md' : '' ?>">
+                        <?php if($isCompleted): ?>
+                            <i class="fas fa-check"></i>
+                        <?php else: ?>
+                            <?= $stepIndex + 1 ?>
+                        <?php endif; ?>
+                    </div>
+                    <span class="mt-4 text-[11px] sm:text-xs font-semibold <?= $isCurrent ? 'text-primary' : ($isCompleted ? 'text-gray-800' : 'text-gray-400') ?> text-center absolute top-10 whitespace-nowrap <?= $stepIndex === 0 ? '-translate-x-1/4 sm:translate-x-0' : ($stepIndex === count($steps)-1 ? 'translate-x-1/4 sm:translate-x-0' : '') ?>"><?= $label ?></span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+    
     <div class="p-8">
         <?php if(empty($details)): ?>
             <div class="text-center py-10">

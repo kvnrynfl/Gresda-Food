@@ -3,6 +3,24 @@ $page_title = "Profil Akun";
 $back_link = BASEURL . "/";
 $hide_card = true;
 ob_start(); 
+
+// Calculate Quick Stats
+$totalOrders = is_array($recent_orders) ? count($recent_orders) : 0;
+$activeOrders = 0;
+$finishedOrders = 0;
+$totalSpent = 0;
+
+if(is_array($recent_orders)) {
+    foreach($recent_orders as $o) {
+        if(in_array($o['status'], ['Cart', 'Payment', 'Confirmed', 'Delivery'])) {
+            $activeOrders++;
+        }
+        if($o['status'] === 'Finished') {
+            $finishedOrders++;
+            $totalSpent += ($o['total'] ?? 0);
+        }
+    }
+}
 ?>
 
 <!-- Welcome Banner -->
@@ -23,6 +41,49 @@ ob_start();
             <a href="<?= BASEURL ?>/customer/editProfile" class="px-5 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300 rounded-lg font-medium transition shadow-sm flex items-center gap-2">
                 <i class="fas fa-cog"></i> Pengaturan
             </a>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+        <div class="w-12 h-12 bg-cyan-50 text-primary rounded-full flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fas fa-shopping-bag"></i>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Total Pesanan</p>
+            <p class="text-2xl font-black text-gray-800"><?= number_format($totalOrders) ?></p>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+        <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fas fa-motorcycle"></i>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Sedang Proses</p>
+            <p class="text-2xl font-black text-gray-800"><?= number_format($activeOrders) ?></p>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+        <div class="w-12 h-12 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Pesanan Selesai</p>
+            <p class="text-2xl font-black text-gray-800"><?= number_format($finishedOrders) ?></p>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fas fa-wallet"></i>
+        </div>
+        <div class="overflow-hidden">
+            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Total Belanja</p>
+            <p class="text-lg font-black text-gray-800 tracking-tight truncate">Rp <?= number_format($totalSpent, 0, ',', '.') ?></p>
         </div>
     </div>
 </div>
@@ -78,10 +139,15 @@ ob_start();
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- If no orders -->
-                <div class="text-center py-12 text-gray-400">
-                    <i class="fas fa-box-open text-5xl mb-4 text-gray-200"></i>
-                    <p>Anda belum membuat pesanan apa pun.</p>
-                    <a href="<?= BASEURL ?>/menu" class="text-primary hover:underline mt-2 inline-block font-semibold">Mulai jelajahi menu</a>
+                <div class="text-center py-12 text-gray-500 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100">
+                        <i class="fas fa-shopping-bag text-4xl text-gray-300"></i>
+                    </div>
+                    <p class="font-bold text-gray-700 mb-2 text-lg">Belum Ada Pesanan</p>
+                    <p class="text-sm text-gray-500 mb-6 max-w-sm mx-auto">Jelajahi menu lezat kami dan buat pesanan pertama Anda untuk memanjakan lidah.</p>
+                    <a href="<?= BASEURL ?>/menu" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white font-semibold flex-shrink-0 rounded-xl hover:bg-cyan-700 transition shadow hover:-translate-y-0.5">
+                        <i class="fas fa-utensils text-sm"></i> Jelajahi Menu Kami
+                    </a>
                 </div>
             <?php endif; ?>
         </div>
