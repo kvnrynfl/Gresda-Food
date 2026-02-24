@@ -167,12 +167,12 @@ class CustomerController extends Controller {
                 $orderModel->removeCartItem($item['detail_id']);
             }
 
-            // Add to tbl_confirmorder (Image will be uploaded later in payment flow)
+            // Add to tbl_confirmorder (Image and Rekening will be uploaded/filled later in payment flow)
             $confirmData = [
                 'order_id' => $orderId,
                 'user_id' => $_SESSION['user_id'],
                 'payment' => Sanitize::string($_POST['payment_method']),
-                'rekening_name' => Sanitize::string($_POST['rekening_name']),
+                'rekening_name' => '', // Empty until they confirm payment
                 'image_name' => '', // Empty until they upload proof
                 'alamat' => Sanitize::string($_POST['address']),
                 'tgl_pay' => date('Y-m-d') // Will update this accurately when they upload
