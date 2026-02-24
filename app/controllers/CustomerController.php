@@ -12,12 +12,8 @@ class CustomerController extends Controller {
         $data['user'] = $this->model('UserModel')->findUserByEmail($_SESSION['email']);
         
         $orderModel = $this->model('OrderModel');
-        $activeCart = $orderModel->getActiveCartByUser($_SESSION['user_id']);
-        $data['cart_count'] = 0;
-        if ($activeCart) {
-            $items = $orderModel->getOrderDetails($activeCart['order_id']);
-            $data['cart_count'] = count($items);
-        }
+        $cartItems = $orderModel->getCartItemsByUser($_SESSION['user_id']);
+        $data['cart_count'] = count($cartItems);
         
         // Pass all carts as recent orders for now, will filter in view or model
         $data['recent_orders'] = $orderModel->getOrdersByUser($_SESSION['user_id']);
@@ -27,13 +23,7 @@ class CustomerController extends Controller {
 
     public function cart() {
         $orderModel = $this->model('OrderModel');
-        $activeCart = $orderModel->getActiveCartByUser($_SESSION['user_id']);
-        
-        $data['cart_items'] = [];
-        if ($activeCart) {
-            $data['cart_items'] = $orderModel->getOrderDetails($activeCart['order_id']);
-        }
-        
+        $data['cart_items'] = $orderModel->getCartItemsByUser($_SESSION['user_id']);
         $this->view('customer/cart', $data);
     }
 
@@ -42,16 +32,7 @@ class CustomerController extends Controller {
             $foodId = Sanitize::string($_POST['food_id']);
             $orderModel = $this->model('OrderModel');
             
-            $activeCart = $orderModel->getActiveCartByUser($_SESSION['user_id']);
-            
-            if (!$activeCart) {
-                $orderId = uniqid('ORD-');
-                $orderModel->createCart($orderId, $_SESSION['user_id']);
-                $activeCart = ['order_id' => $orderId];
-            }
-            
-            // Should check if item exists and update qty, for now just simple add
-            $orderModel->addDetailItem($activeCart['order_id'], $foodId, 1);
+            $orderModel->addToCart($_SESSION['user_id'], $foodId, 1);
             
             $_SESSION['flash_success'] = "Berhasil masuk keranjang!";
             $this->redirect('/menu');
@@ -64,26 +45,17 @@ class CustomerController extends Controller {
             $action = Sanitize::string($_POST['action']);
             
             $orderModel = $this->model('OrderModel');
-            $activeCart = $orderModel->getActiveCartByUser($_SESSION['user_id']);
+            $cartItems = $orderModel->getCartItemsByUser($_SESSION['user_id']);
             
-            if ($activeCart) {
-                $items = $orderModel->getOrderDetails($activeCart['order_id']);
-                $currentQty = 0;
-                foreach ($items as $item) {
-                    if ($item['food_id'] == $foodId) {
-                        $currentQty = $item['qty'];
-                        break;
-                    }
-                }
-                
-                if ($currentQty > 0) {
+            foreach ($cartItems as $item) {
+                if ($item['food_id'] == $foodId) {
+                    $currentQty = $item['qty'];
                     if ($action == 'increase') {
-                        $newQty = $currentQty + 1;
-                        $orderModel->updateDetailQty($activeCart['order_id'], $foodId, $newQty);
+                        $orderModel->updateCartQty($item['detail_id'], $currentQty + 1);
                     } elseif ($action == 'decrease' && $currentQty > 1) {
-                        $newQty = $currentQty - 1;
-                        $orderModel->updateDetailQty($activeCart['order_id'], $foodId, $newQty);
+                        $orderModel->updateCartQty($item['detail_id'], $currentQty - 1);
                     }
+                    break;
                 }
             }
             $this->redirect('/customer/cart');
@@ -94,10 +66,13 @@ class CustomerController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
             $foodId = Sanitize::string($_POST['food_id']);
             $orderModel = $this->model('OrderModel');
-            $activeCart = $orderModel->getActiveCartByUser($_SESSION['user_id']);
+            $cartItems = $orderModel->getCartItemsByUser($_SESSION['user_id']);
             
-            if ($activeCart) {
-                $orderModel->removeDetailItem($activeCart['order_id'], $foodId);
+            foreach ($cartItems as $item) {
+                if ($item['food_id'] == $foodId) {
+                    $orderModel->removeCartItem($item['detail_id']);
+                    break;
+                }
             }
             $this->redirect('/customer/cart');
         }
@@ -125,21 +100,20 @@ class CustomerController extends Controller {
         $orderModel = $this->model('OrderModel');
         $data['payment_methods'] = $orderModel->getAllPayments();
         
-        $activeCart = $orderModel->getActiveCartByUser($_SESSION['user_id']);
-        if ($activeCart) {
-            $allItems = $orderModel->getOrderDetails($activeCart['order_id']);
-            $checkoutItems = [];
-            foreach ($allItems as $item) {
-                if (in_array($item['detail_id'], $_SESSION['checkout_items'])) {
-                    $checkoutItems[] = $item;
-                }
+        $allItems = $orderModel->getCartItemsByUser($_SESSION['user_id']);
+        $checkoutItems = [];
+        foreach ($allItems as $item) {
+            if (in_array($item['detail_id'], $_SESSION['checkout_items'])) {
+                $checkoutItems[] = $item;
             }
-            $data['checkout_items'] = $checkoutItems;
-        } else {
-            $this->redirect('/customer/cart');
         }
+        $data['checkout_items'] = $checkoutItems;
         
-        $this->view('customer/checkout', $data);
+        if (empty($checkoutItems)) {
+            $this->redirect('/customer/cart');
+        } else {
+            $this->view('customer/checkout', $data);
+        }
     }
 
     public function processCheckout() {
@@ -149,83 +123,72 @@ class CustomerController extends Controller {
                 return;
             }
             $orderModel = $this->model('OrderModel');
-            $activeCart = $orderModel->getActiveCartByUser($_SESSION['user_id']);
             
-            if ($activeCart) {
-                $allItems = $orderModel->getOrderDetails($activeCart['order_id']);
-                
-                $checkoutItems = [];
-                $leftoverItems = [];
-                foreach ($allItems as $item) {
-                    if (in_array($item['detail_id'], $_SESSION['checkout_items'])) {
-                        $checkoutItems[] = $item;
-                    } else {
-                        $leftoverItems[] = $item;
-                    }
+            $allItems = $orderModel->getCartItemsByUser($_SESSION['user_id']);
+            $checkoutItems = [];
+            foreach ($allItems as $item) {
+                if (in_array($item['detail_id'], $_SESSION['checkout_items'])) {
+                    $checkoutItems[] = $item;
                 }
-                
-                if (empty($checkoutItems)) {
-                     $this->redirect('/customer/cart');
-                     return;
-                }
+            }
+            
+            if (empty($checkoutItems)) {
+                 $this->redirect('/customer/cart');
+                 return;
+            }
 
-                // Split Cart: Move unselected items to a new Cart ID
-                if (!empty($leftoverItems)) {
-                    $newCartOrderId = uniqid('ORD-');
-                    $orderModel->createCart($newCartOrderId, $_SESSION['user_id']);
-                    foreach ($leftoverItems as $item) {
-                        $orderModel->updateDetailOrderId($item['detail_id'], $newCartOrderId);
-                    }
-                }
+            // Determine Totals
+            $totalPrice = 0;
+            foreach ($checkoutItems as $item) {
+                $totalPrice += ($item['price'] ?? 0) * ($item['qty'] ?? 1);
+            }
+            // Calculate Grand Total including Tax (10%) and Shipping (15000)
+            $grandTotal = ($totalPrice * 1.1) + 15000;
+            
+            // Create the real Order Document
+            $orderId = uniqid('ORD-');
+            $orderModel->createOrder($orderId, $_SESSION['user_id'], $grandTotal, 'Payment');
 
-                // Calculate Total solely for selected items
-                $totalPrice = 0;
-                foreach ($checkoutItems as $item) {
-                    $totalPrice += ($item['price'] ?? 0) * ($item['qty'] ?? 1);
-                }
-                
-                // Calculate Grand Total including Tax (10%) and Shipping (15000)
-                $grandTotal = ($totalPrice * 1.1) + 15000;
-                
-                // Update Total in Database
-                $orderModel->updateCartTotal($activeCart['order_id'], $grandTotal);
+            // Move the selected items from the cart to order_details
+            foreach ($checkoutItems as $item) {
+                $orderModel->addDetailItem($orderId, $item['food_id'], $item['qty'], $item['price'] ?? 0);
+                $orderModel->removeCartItem($item['detail_id']);
+            }
 
-                // Handle file upload for payment proof
-                $image_name = '';
-                if (isset($_FILES['payment_proof']) && $_FILES['payment_proof']['error'] == 0) {
-                    $upload = Upload::image($_FILES['payment_proof'], '../public/images/confirm');
-                    if ($upload['status']) {
-                        $image_name = $upload['filename'];
-                    } else {
-                        $_SESSION['flash_error'] = "Gagal mengunggah bukti pembayaran: " . $upload['message'];
-                        $this->redirect('/customer/checkout');
-                        return;
-                    }
+            // Handle file upload for payment proof
+            $image_name = '';
+            if (isset($_FILES['payment_proof']) && $_FILES['payment_proof']['error'] == 0) {
+                $upload = Upload::image($_FILES['payment_proof'], '../public/images/confirm');
+                if ($upload['status']) {
+                    $image_name = $upload['filename'];
                 } else {
-                    $_SESSION['flash_error'] = "Bukti pembayaran wajib diunggah.";
+                    $_SESSION['flash_error'] = "Gagal mengunggah bukti pembayaran: " . $upload['message'];
                     $this->redirect('/customer/checkout');
                     return;
                 }
-
-                // Add to tbl_confirmorder
-                $confirmData = [
-                    'order_id' => $activeCart['order_id'],
-                    'user_id' => $_SESSION['user_id'],
-                    'payment' => Sanitize::string($_POST['payment_method']),
-                    'rekening_name' => Sanitize::string($_POST['rekening_name']),
-                    'image_name' => $image_name,
-                    'alamat' => Sanitize::string($_POST['address']),
-                    'tgl_pay' => date('Y-m-d') 
-                ];
-                $orderModel->saveConfirmOrder($confirmData);
-                
-                $orderModel->updateOrderStatus($activeCart['order_id'], 'Payment');
-                
-                // clear session selection
-                unset($_SESSION['checkout_items']);
-
-                $_SESSION['flash_success'] = "Pembayaran berhasil dikonfirmasi. Pesanan sedang diproses.";
+            } else {
+                $_SESSION['flash_error'] = "Bukti pembayaran wajib diunggah.";
+                $this->redirect('/customer/checkout');
+                return;
             }
+
+            // Add to tbl_confirmorder
+            $confirmData = [
+                'order_id' => $orderId,
+                'user_id' => $_SESSION['user_id'],
+                'payment' => Sanitize::string($_POST['payment_method']),
+                'rekening_name' => Sanitize::string($_POST['rekening_name']),
+                'image_name' => $image_name,
+                'alamat' => Sanitize::string($_POST['address']),
+                'tgl_pay' => date('Y-m-d') 
+            ];
+            $orderModel->saveConfirmOrder($confirmData);
+            
+            // clear session selection
+            unset($_SESSION['checkout_items']);
+
+            $_SESSION['flash_success'] = "Pembayaran berhasil dikonfirmasi. Pesanan sedang diproses.";
+            
             $this->redirect('/customer/orders');
         }
     }
@@ -237,7 +200,6 @@ class CustomerController extends Controller {
     
     public function orderDetails($id) {
         $orderModel = $this->model('OrderModel');
-        $activeCart = $orderModel->getActiveCartByUser($_SESSION['user_id']);
         
         // Security check: Verify order belongs to this user
         $userOrders = $orderModel->getOrdersByUser($_SESSION['user_id']);
@@ -256,7 +218,7 @@ class CustomerController extends Controller {
 
         $data['details'] = $orderModel->getOrderDetails($id);
         $data['order_id'] = $id;
-        $this->view('customer/order_details', $data); // We'll just build a basic view next
+        $this->view('customer/order_details', $data);
     }
 
     public function changePassword() {

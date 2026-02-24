@@ -68,8 +68,8 @@ class FoodModel extends Database {
         $this->query("
             SELECT f.*, COALESCE(SUM(d.qty), 0) as total_sold
             FROM tbl_food f
-            LEFT JOIN tbl_detailorder d ON f.food_id = d.food_id
-            LEFT JOIN tbl_cart c ON d.order_id = c.order_id AND c.status != 'Cart'
+            LEFT JOIN tbl_order_details d ON f.food_id = d.food_id
+            LEFT JOIN tbl_orders o ON d.order_id = o.order_id AND o.status != 'Pending'
             WHERE f.active = 'Yes'
             GROUP BY f.food_id
             ORDER BY total_sold DESC

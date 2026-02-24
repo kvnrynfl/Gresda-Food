@@ -8,9 +8,10 @@ class UserModel extends Database {
 
     public function create($data) {
         $id = UUID::v4();
-        $this->query("INSERT INTO tbl_users (id, username, email, password) VALUES (:id, :username, :email, :password)");
+        $this->query("INSERT INTO tbl_users (id, full_name, username, email, password, role) VALUES (:id, :full_name, :username, :email, :password, 'customer')");
         
         $this->bind(':id', $id);
+        $this->bind(':full_name', $data['full_name'] ?? $data['username']);
         $this->bind(':username', $data['username']);
         $this->bind(':email', $data['email']);
         $this->bind(':password', $data['password']); // Expected to be Bcrypt hashed already
@@ -21,6 +22,12 @@ class UserModel extends Database {
     public function findUserByEmail($email) {
         $this->query("SELECT * FROM tbl_users WHERE email = :email");
         $this->bind(':email', $email);
+        return $this->single();
+    }
+
+    public function findByUsernameOrEmail($login) {
+        $this->query("SELECT * FROM tbl_users WHERE email = :login OR username = :login");
+        $this->bind(':login', $login);
         return $this->single();
     }
 

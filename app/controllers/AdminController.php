@@ -157,7 +157,7 @@ class AdminController extends Controller {
             // Reusing update profile style logic but mapping directly to DB params - we need updateAdmin method
             // Fast workaround for this missing update profile method in admin model
             $db = new Database();
-            $db->query("UPDATE tbl_admin SET full_name = :full_name, username = :username WHERE id = :id");
+            $db->query("UPDATE tbl_users SET full_name = :full_name, username = :username WHERE id = :id AND role = 'admin'");
             $db->bind(':full_name', $postData['full_name']);
             $db->bind(':username', $postData['username']);
             $db->bind(':id', $id);
@@ -168,7 +168,7 @@ class AdminController extends Controller {
             $this->redirect('/admin/admins');
         }
         $db = new Database();
-        $db->query("SELECT * FROM tbl_admin WHERE id = :id");
+        $db->query("SELECT * FROM tbl_users WHERE id = :id AND role = 'admin'");
         $db->bind(':id', $id);
         $data['admin'] = $db->single();
         $this->view('admin/admin_edit', $data);
@@ -184,7 +184,7 @@ class AdminController extends Controller {
             $this->redirect('/admin/admins');
         }
         $db = new Database();
-        $db->query("SELECT * FROM tbl_admin WHERE id = :id");
+        $db->query("SELECT * FROM tbl_users WHERE id = :id AND role = 'admin'");
         $db->bind(':id', $id);
         $data['admin'] = $db->single();
         $this->view('admin/admin_password', $data);
