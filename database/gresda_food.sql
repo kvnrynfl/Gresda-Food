@@ -17,50 +17,49 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_admin`
---
-
-CREATE TABLE `tbl_admin` (
-  `id` char(36) NOT NULL DEFAULT '',
-  `full_name` varchar(100) NOT NULL,
-  `username` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tbl_admin`
---
-
-INSERT INTO `tbl_admin` (`id`, `full_name`, `username`, `password`) VALUES
-('c6bfd833-8167-44f2-916a-d9f24590099b', 'Administrator', 'admin', '$2a$12$rgvc/gwskWyjbAzfuVWBG.Y.y/mJ/dpkAoW19/9YCEvS/QSjZ/Kiu');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `tbl_cart`
 --
 
 CREATE TABLE `tbl_cart` (
-  `cart_id` char(36) NOT NULL DEFAULT '',
+  `id` char(36) NOT NULL DEFAULT '',
+  `user_id` char(36) NOT NULL DEFAULT '',
+  `food_id` char(36) NOT NULL DEFAULT '',
+  `qty` int(10) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `food_id` (`food_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_orders`
+--
+
+CREATE TABLE `tbl_orders` (
+  `id` char(36) NOT NULL DEFAULT '',
   `order_id` varchar(100) NOT NULL,
   `user_id` char(36) NOT NULL DEFAULT '',
   `tgl_order` timestamp NULL DEFAULT current_timestamp(),
   `status` varchar(10) NOT NULL DEFAULT 'Cart',
   `total` decimal(10,2) NOT NULL DEFAULT '0.00',
-  PRIMARY KEY (`cart_id`),
-  KEY `order_id` (`order_id`)
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `order_id` (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_cart`
+-- Dumping data for table `tbl_orders`
 --
 
-INSERT INTO `tbl_cart` (`cart_id`, `order_id`, `user_id`, `tgl_order`, `status`, `total`) VALUES
-('c4d89855-e840-4bc5-bfb2-51054adf131f', 'ORD-16VO00TGHMNK', '1bf85fa8-7c6e-46f5-8e1f-ed186ca8f64b', '2021-10-11 13:54:52', 'Finished', 330000.00),
-('30bb2c37-a863-41e6-8cc4-272506f88be3', 'ORD-16VDICBP7HPHK', 'b2afcaeb-b6d2-4097-bb45-53007d358366', '2021-10-11 14:32:06', 'Finished', 170000.00),
-('3655f9cc-3fd4-4be1-9078-c9f51b05fd41', 'ORD-167DSCRBUDJUO', '2b8a42fb-3dc5-42c0-afb9-9ba56bd9bc99', '2021-10-11 14:40:32', 'Finished', 80000.00),
-('d6eb8d5d-d6d1-47b7-a637-16fe987ed232', 'ORD-16IRGHP0NI8EA', 'd817e654-c978-4cd0-a878-6872888472b3', '2021-10-11 15:15:53', 'Finished', 75000.00);
+INSERT INTO `tbl_orders` (`id`, `order_id`, `user_id`, `tgl_order`, `status`, `total`, `created_at`) VALUES
+('c4d89855-e840-4bc5-bfb2-51054adf131f', 'ORD-16VO00TGHMNK', '1bf85fa8-7c6e-46f5-8e1f-ed186ca8f64b', '2021-10-11 13:54:52', 'Finished', 330000.00, '2021-10-11 13:54:52'),
+('30bb2c37-a863-41e6-8cc4-272506f88be3', 'ORD-16VDICBP7HPHK', 'b2afcaeb-b6d2-4097-bb45-53007d358366', '2021-10-11 14:32:06', 'Finished', 170000.00, '2021-10-11 14:32:06'),
+('3655f9cc-3fd4-4be1-9078-c9f51b05fd41', 'ORD-167DSCRBUDJUO', '2b8a42fb-3dc5-42c0-afb9-9ba56bd9bc99', '2021-10-11 14:40:32', 'Finished', 80000.00, '2021-10-11 14:40:32'),
+('d6eb8d5d-d6d1-47b7-a637-16fe987ed232', 'ORD-16IRGHP0NI8EA', 'd817e654-c978-4cd0-a878-6872888472b3', '2021-10-11 15:15:53', 'Finished', 75000.00, '2021-10-11 15:15:53');
 
 -- --------------------------------------------------------
 
@@ -73,6 +72,8 @@ CREATE TABLE `tbl_category` (
   `name` varchar(100) NOT NULL,
   `category` varchar(100) NOT NULL,
   `active` varchar(10) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -106,7 +107,8 @@ CREATE TABLE `tbl_confirmorder` (
   `image_name` varchar(255) NOT NULL,
   `alamat` varchar(255) NOT NULL,
   `tgl_pay` date NOT NULL,
-  `tgl_submit` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -114,7 +116,7 @@ CREATE TABLE `tbl_confirmorder` (
 -- Dumping data for table `tbl_confirmorder`
 --
 
-INSERT INTO `tbl_confirmorder` (`id`, `order_id`, `user_id`, `payment`, `rekening_name`, `image_name`, `alamat`, `tgl_pay`, `tgl_submit`) VALUES
+INSERT INTO `tbl_confirmorder` (`id`, `order_id`, `user_id`, `payment`, `rekening_name`, `image_name`, `alamat`, `tgl_pay`, `created_at`) VALUES
 ('f2b17126-434d-49ac-ae44-c0ddd266db6b', 'ORD-16VO00TGHMNK', '1bf85fa8-7c6e-46f5-8e1f-ed186ca8f64b', 'Bank BCA', 'Kevin Reynaufal', '4196.png', 'Komplek baleendah permai blok Z no 5', '2021-10-11', '2021-10-11 13:56:08'),
 ('5b8f30d4-f278-4c1a-aea9-3f46d4847c85', 'ORD-16VDICBP7HPHK', 'b2afcaeb-b6d2-4097-bb45-53007d358366', 'Bank BNI', 'Irfan Rizky', '3095.png', 'Komplek Baleendah Permai Jalan Padi Endah 5 No 200 RT 03/RW 25', '2021-10-11', '2021-10-11 14:34:22'),
 ('c405da65-8473-4288-8b4c-2c956438e61e', 'ORD-167DSCRBUDJUO', '2b8a42fb-3dc5-42c0-afb9-9ba56bd9bc99', 'Bank BRI', 'Fahri Arsyah', '6399.png', 'Jl Cibuntu Selatan RT 02 / RW 10', '2021-10-11', '2021-10-11 14:41:51'),
@@ -131,6 +133,8 @@ CREATE TABLE `tbl_contact` (
   `customer_name` varchar(150) NOT NULL,
   `customer_email` varchar(150) NOT NULL,
   `customer_message` varchar(300) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -144,25 +148,27 @@ INSERT INTO `tbl_contact` (`id`, `customer_name`, `customer_email`, `customer_me
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_detailorder`
+-- Table structure for table `tbl_order_details`
 --
 
-CREATE TABLE `tbl_detailorder` (
+CREATE TABLE `tbl_order_details` (
   `detail_id` char(36) NOT NULL DEFAULT '',
   `order_id` varchar(100) NOT NULL,
   `food_id` char(36) NOT NULL DEFAULT '',
   `qty` int(10) NOT NULL,
   `price_at_time` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`detail_id`),
   KEY `order_id` (`order_id`),
   KEY `food_id` (`food_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_detailorder`
+-- Dumping data for table `tbl_order_details`
 --
 
-INSERT INTO `tbl_detailorder` (`detail_id`, `order_id`, `food_id`, `qty`, `price_at_time`) VALUES
+INSERT INTO `tbl_order_details` (`detail_id`, `order_id`, `food_id`, `qty`, `price_at_time`) VALUES
 ('ed52300f-0b3f-4397-afbc-f714ca99d9d1', 'ORD-16VO00TGHMNK', 'c808f4a4-74ee-4e83-8304-df54af4b7f03', 1, 50000.00),
 ('7496f56a-db7f-45cf-ab9b-39984bb49e0b', 'ORD-16VO00TGHMNK', 'e90996e6-3f36-4c8b-a5c0-ffd4edc6c6e5', 1, 280000.00),
 ('8f59710c-61b3-4223-b588-df2c1627ccb6', 'ORD-16VDICBP7HPHK', 'dc8a3e72-2c28-4e6e-8538-68ff07a8450b', 1, 110000.00),
@@ -186,6 +192,8 @@ CREATE TABLE `tbl_food` (
   `description` text NOT NULL,
   `image_name` varchar(255) NOT NULL,
   `active` varchar(10) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`food_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -278,6 +286,8 @@ CREATE TABLE `tbl_payment` (
   `rekening_number` varchar(25) NOT NULL,
   `image_name` text NOT NULL,
   `an` varchar(25) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -307,6 +317,8 @@ CREATE TABLE `tbl_review` (
   `message` varchar(280) NOT NULL,
   `tgl_review` date DEFAULT NULL,
   `active` varchar(10) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -324,14 +336,19 @@ INSERT INTO `tbl_review` (`id`, `order_id`, `user_id`, `rating`, `message`, `tgl
 
 --
 -- Table structure for table `tbl_users`
+-- (Merged admin and users table with role concept)
 --
 
 CREATE TABLE `tbl_users` (
   `id` char(36) NOT NULL DEFAULT '',
-  `img_user` varchar(255) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
   `username` varchar(150) NOT NULL,
   `email` varchar(150) NOT NULL,
-  `password` varchar(150) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `img_user` varchar(255) NOT NULL DEFAULT 'default.jpg',
+  `role` enum('admin','customer') NOT NULL DEFAULT 'customer',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -339,27 +356,27 @@ CREATE TABLE `tbl_users` (
 -- Dumping data for table `tbl_users`
 --
 
-INSERT INTO `tbl_users` (`id`, `img_user`, `username`, `email`, `password`) VALUES
-('1bf85fa8-7c6e-46f5-8e1f-ed186ca8f64b', '1731.jpg', 'Kevin Reynaufal', 'kevinreynaufal2004@gmail.com', '$2a$12$ZCul5FGz74xNekXa/VEJPuE63RNVUryJi9BRvglpGYgHTnTnZkAG.'),
-('b2afcaeb-b6d2-4097-bb45-53007d358366', '1759.jpg', 'Irfan Rizqy ', 'irfanrizqy123@gmail.com', '$2a$12$ZCul5FGz74xNekXa/VEJPuE63RNVUryJi9BRvglpGYgHTnTnZkAG.'),
-('2b8a42fb-3dc5-42c0-afb9-9ba56bd9bc99', '9622.jpg', 'Fahri Arsyah', 'fahriarsyah123@gmail.com', '$2a$12$ZCul5FGz74xNekXa/VEJPuE63RNVUryJi9BRvglpGYgHTnTnZkAG.'),
-('d817e654-c978-4cd0-a878-6872888472b3', '6078.jpg', 'Naufal Andya', 'naufalandya123@gmail.com', '$2a$12$ZCul5FGz74xNekXa/VEJPuE63RNVUryJi9BRvglpGYgHTnTnZkAG.');
+INSERT INTO `tbl_users` (`id`, `full_name`, `username`, `email`, `password`, `img_user`, `role`) VALUES
+('c6bfd833-8167-44f2-916a-d9f24590099b', 'Administrator', 'superadmin', 'superadmin@gresdafood.com', '$2a$12$rgvc/gwskWyjbAzfuVWBG.Y.y/mJ/dpkAoW19/9YCEvS/QSjZ/Kiu', '1731.jpg', 'admin'),
+('1bf85fa8-7c6e-46f5-8e1f-ed186ca8f64b', 'Kevin Reynaufal', 'Kevin Reynaufal', 'kevinreynaufal2004@gmail.com', '$2a$12$ZCul5FGz74xNekXa/VEJPuE63RNVUryJi9BRvglpGYgHTnTnZkAG.', '1731.jpg', 'customer'),
+('b2afcaeb-b6d2-4097-bb45-53007d358366', 'Irfan Rizqy', 'Irfan Rizqy ', 'irfanrizqy123@gmail.com', '$2a$12$ZCul5FGz74xNekXa/VEJPuE63RNVUryJi9BRvglpGYgHTnTnZkAG.', '1759.jpg', 'customer'),
+('2b8a42fb-3dc5-42c0-afb9-9ba56bd9bc99', 'Fahri Arsyah', 'Fahri Arsyah', 'fahriarsyah123@gmail.com', '$2a$12$ZCul5FGz74xNekXa/VEJPuE63RNVUryJi9BRvglpGYgHTnTnZkAG.', '9622.jpg', 'customer'),
+('d817e654-c978-4cd0-a878-6872888472b3', 'Naufal Andya', 'Naufal Andya', 'naufalandya123@gmail.com', '$2a$12$ZCul5FGz74xNekXa/VEJPuE63RNVUryJi9BRvglpGYgHTnTnZkAG.', '6078.jpg', 'customer');
 
 COMMIT;
 
 DELIMITER $$
-CREATE TRIGGER before_insert_admin BEFORE INSERT ON tbl_admin FOR EACH ROW BEGIN IF NEW.id = '' THEN SET NEW.id = UUID(); END IF; END$$
 CREATE TRIGGER before_insert_users BEFORE INSERT ON tbl_users FOR EACH ROW BEGIN IF NEW.id = '' THEN SET NEW.id = UUID(); END IF; END$$
 CREATE TRIGGER before_insert_category BEFORE INSERT ON tbl_category FOR EACH ROW BEGIN IF NEW.id = '' THEN SET NEW.id = UUID(); END IF; END$$
 CREATE TRIGGER before_insert_food BEFORE INSERT ON tbl_food FOR EACH ROW BEGIN IF NEW.food_id = '' THEN SET NEW.food_id = UUID(); END IF; END$$
-CREATE TRIGGER before_insert_cart BEFORE INSERT ON tbl_cart FOR EACH ROW BEGIN IF NEW.cart_id = '' THEN SET NEW.cart_id = UUID(); END IF; END$$
+CREATE TRIGGER before_insert_cart BEFORE INSERT ON tbl_cart FOR EACH ROW BEGIN IF NEW.id = '' THEN SET NEW.id = UUID(); END IF; END$$
+CREATE TRIGGER before_insert_orders BEFORE INSERT ON tbl_orders FOR EACH ROW BEGIN IF NEW.id = '' THEN SET NEW.id = UUID(); END IF; END$$
 CREATE TRIGGER before_insert_confirmorder BEFORE INSERT ON tbl_confirmorder FOR EACH ROW BEGIN IF NEW.id = '' THEN SET NEW.id = UUID(); END IF; END$$
 CREATE TRIGGER before_insert_contact BEFORE INSERT ON tbl_contact FOR EACH ROW BEGIN IF NEW.id = '' THEN SET NEW.id = UUID(); END IF; END$$
-CREATE TRIGGER before_insert_detailorder BEFORE INSERT ON tbl_detailorder FOR EACH ROW BEGIN IF NEW.detail_id = '' THEN SET NEW.detail_id = UUID(); END IF; END$$
 CREATE TRIGGER before_insert_payment BEFORE INSERT ON tbl_payment FOR EACH ROW BEGIN IF NEW.id = '' THEN SET NEW.id = UUID(); END IF; END$$
 CREATE TRIGGER before_insert_review BEFORE INSERT ON tbl_review FOR EACH ROW BEGIN IF NEW.id = '' THEN SET NEW.id = UUID(); END IF; END$$
+CREATE TRIGGER before_insert_order_details BEFORE INSERT ON tbl_order_details FOR EACH ROW BEGIN IF NEW.detail_id = '' THEN SET NEW.detail_id = UUID(); END IF; END$$
 DELIMITER ;
-
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
