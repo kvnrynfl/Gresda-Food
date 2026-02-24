@@ -107,11 +107,20 @@
                                 <i class="fas fa-user-circle text-xl"></i>
                                 <?= $_SESSION['username'] ?>
                             </button>
-                            <div class="absolute right-0 w-48 mt-2 py-2 bg-white border border-gray-100 rounded-md shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                                <a href="<?= BASEURL ?>/customer/editProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">Edit Profil</a>
-                                <a href="<?= BASEURL ?>/customer/changePassword" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">Ganti Password</a>
-                                <a href="<?= BASEURL ?>/customer/orders" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">Riwayat Transaksi</a>
-                                <a href="<?= BASEURL ?>/auth/logout" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">Keluar</a>
+                            <div class="absolute right-0 w-64 mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100 z-50">
+                                <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 rounded-t-xl">
+                                    <p class="text-sm font-bold text-gray-900 truncate"><?= htmlspecialchars($_SESSION['username']) ?></p>
+                                    <p class="text-xs text-gray-500 truncate flex items-center gap-1 mt-1"><i class="fas fa-check-circle text-green-500"></i> Akun Pelanggan</p>
+                                </div>
+                                <div class="py-2">
+                                    <a href="<?= BASEURL ?>/customer/profile" class="block px-5 py-2.5 text-sm text-gray-700 hover:bg-cyan-50 hover:text-primary transition flex items-center gap-3"><i class="fas fa-user-circle text-gray-400 w-4 text-center"></i> Profil Saya</a>
+                                    <a href="<?= BASEURL ?>/customer/editProfile" class="block px-5 py-2.5 text-sm text-gray-700 hover:bg-cyan-50 hover:text-primary transition flex items-center gap-3"><i class="fas fa-cog text-gray-400 w-4 text-center"></i> Pengaturan Akun</a>
+                                    <a href="<?= BASEURL ?>/customer/orders" class="block px-5 py-2.5 text-sm text-gray-700 hover:bg-cyan-50 hover:text-primary transition flex items-center gap-3"><i class="fas fa-history text-gray-400 w-4 text-center"></i> Riwayat Transaksi</a>
+                                </div>
+                                <div class="border-t border-gray-100"></div>
+                                <div class="py-1">
+                                    <a href="<?= BASEURL ?>/auth/logout" class="block px-5 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition flex items-center gap-3 rounded-b-xl"><i class="fas fa-sign-out-alt text-red-400 w-4 text-center"></i> Keluar</a>
+                                </div>
                             </div>
                         </div>
                     <?php else: ?>
@@ -141,7 +150,7 @@
                         <i class="fas fa-shopping-cart w-5 mr-1 text-center"></i> Keranjang (<span class="text-primary"><?= $globalCartCount ?? 0 ?></span>)
                     </a>
                     <a href="<?= BASEURL ?>/customer/profile" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
-                        <i class="fas fa-user-circle w-5 mr-1 text-center"></i> Dasbor (<?= $_SESSION['username'] ?>)
+                        <i class="fas fa-user-circle w-5 mr-1 text-center"></i> Profil Saya
                     </a>
                     <a href="<?= BASEURL ?>/customer/orders" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
                         <i class="fas fa-history w-5 mr-1 text-center"></i> Riwayat

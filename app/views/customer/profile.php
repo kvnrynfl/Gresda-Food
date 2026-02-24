@@ -6,7 +6,7 @@
         <!-- Welcome Banner -->
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 mt-8">
             <div class="bg-gradient-to-r from-cyan-600 to-blue-800 h-40 relative flex items-center px-8 sm:px-32">
-                <h1 class="text-white text-2xl font-bold opacity-90 tracking-wide"><i class="fas fa-id-badge mr-2"></i> Dasbor Profil Pengguna</h1>
+                <h1 class="text-white text-2xl font-bold opacity-90 tracking-wide"><i class="fas fa-user mr-2"></i> Profil Akun</h1>
                 <div class="absolute -bottom-12 left-8">
                     <img src="<?= BASEURL ?>/images/users/<?= htmlspecialchars($user['img_user'] ?? 'default.jpg') ?>" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($user['username'] ?? 'User') ?>&background=E53E3E&color=fff'" alt="Profile" class="w-24 h-24 rounded-full border-4 border-white object-cover shadow-lg bg-white">
                 </div>
@@ -89,14 +89,16 @@
             <!-- Quick Actions -->
             <div class="space-y-6">
                 <!-- Shopping Cart -->
-                <div class="bg-primary text-white rounded-2xl shadow-lg p-6 relative overflow-hidden group hover:scale-[1.02] transition cursor-pointer" onclick="window.location.href='<?= BASEURL ?>/customer/cart'">
-                    <i class="fas fa-shopping-cart absolute -bottom-6 -right-6 text-9xl text-white opacity-10 group-hover:scale-110 transition duration-500"></i>
+                <div class="bg-gradient-to-br from-cyan-500 to-primary text-white rounded-2xl shadow-lg p-6 relative overflow-hidden group hover:scale-[1.02] transition duration-300 cursor-pointer" onclick="window.location.href='<?= BASEURL ?>/customer/cart'">
+                    <i class="fas fa-shopping-cart absolute -bottom-4 -right-4 text-8xl text-white opacity-20 group-hover:scale-110 group-hover:-rotate-12 transition duration-500"></i>
                     <div class="relative z-10">
-                        <h4 class="text-xl font-bold mb-1">Keranjang Saya</h4>
-                        <p class="text-cyan-100 text-sm mb-4">Anda memiliki <?= $cart_count ?? 0 ?> item di keranjang Anda.</p>
-                        <div class="flex items-center justify-between items-end mt-4">
-                            <span class="text-3xl font-extrabold flex items-center gap-1"><i class="fas fa-box-open text-lg opacity-80"></i> <?= $cart_count ?? 0 ?></span>
-                            <i class="fas fa-arrow-right text-white"></i>
+                        <h4 class="text-xl font-extrabold mb-1 drop-shadow-sm">Keranjang Belanja</h4>
+                        <p class="text-cyan-50 text-sm mb-6 drop-shadow-sm">Anda memiliki <?= $cart_count ?? 0 ?> item lezat yang menunggu.</p>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-4xl font-black drop-shadow-md"><?= $cart_count ?? 0 ?></span>
+                            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm group-hover:bg-white/30 transition">
+                                <i class="fas fa-arrow-right text-white"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
