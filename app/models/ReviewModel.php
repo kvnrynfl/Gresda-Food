@@ -18,12 +18,13 @@ class ReviewModel extends Database {
 
     public function create($data) {
         $id = UUID::v4();
-        $this->query("INSERT INTO tbl_review (id, order_id, user_id, rating, message, active) VALUES (:id, :order_id, :user_id, :rating, :message, :active)");
+        $this->query("INSERT INTO tbl_review (id, order_id, user_id, rating, message, tgl_review, active) VALUES (:id, :order_id, :user_id, :rating, :message, :tgl_review, :active)");
         $this->bind(':id', $id);
         $this->bind(':order_id', $data['order_id']);
         $this->bind(':user_id', $data['user_id']);
         $this->bind(':rating', $data['rating']);
         $this->bind(':message', $data['message']);
+        $this->bind(':tgl_review', date('Y-m-d'));
         $this->bind(':active', $data['active'] ?? 'No'); // Pending initially usually, but legacy sets to Yes immediately
         return $this->execute();
     }

@@ -30,7 +30,7 @@ include '../app/views/layouts/header.php';
                     </div>
 
                     <div>
-                        <label for="username" class="block text-sm font-bold text-gray-700 mb-2">Nama Lengkap</label>
+                        <label for="username" class="block text-sm font-bold text-gray-700 mb-2">Nama Pengguna</label>
                         <input id="username" name="username" type="text" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition">
                     </div>
 
