@@ -11,10 +11,14 @@
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div class="bg-primary/10 border-b border-primary/20 px-8 py-6 flex flex-col sm:flex-row justify-between items-center">
+            <div class="bg-primary/10 border-b border-primary/20 px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div>
                     <p class="text-sm font-semibold text-primary uppercase tracking-wider mb-1">ID Pesanan</p>
                     <h2 class="text-2xl font-bold text-gray-900 font-mono">#<?= htmlspecialchars($order_id) ?></h2>
+                </div>
+                <!-- Adding generic order date for user context, utilizing the first detail item timestamp or just display text -->
+                <div class="text-sm font-bold text-gray-600 bg-white px-4 py-2 rounded-lg shadow-sm">
+                    <i class="far fa-clock text-primary mr-1"></i> Riwayat Pesanan Anda
                 </div>
             </div>
             

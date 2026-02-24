@@ -25,6 +25,7 @@ include '../app/views/layouts/admin_header.php';
                     <td class="px-6 py-4">Item Makanan</td>
                     <td class="px-6 py-4">Harga</td>
                     <td class="px-6 py-4">Kategori</td>
+                    <td class="px-6 py-4">Dibuat / Diperbarui</td>
                     <td class="px-6 py-4">Status</td>
                     <td class="px-6 py-4 text-center">Aksi</td>
                 </tr>
@@ -48,6 +49,10 @@ include '../app/views/layouts/admin_header.php';
                         <td class="px-6 py-4 text-sm text-gray-500">
                             <span class="bg-gray-100 px-3 py-1 rounded text-xs font-semibold uppercase tracking-wide"><?= htmlspecialchars($food['category']) ?></span>
                         </td>
+                        <td class="px-6 py-4 text-xs text-gray-400 font-mono">
+                            <div class="mb-1 text-gray-600"><i class="fas fa-plus-circle text-green-500 mr-1"></i> <?= date('d M y H:i', strtotime($food['created_at'])) ?></div>
+                            <div><i class="fas fa-edit text-blue-400 mr-1"></i> <?= date('d M y H:i', strtotime($food['updated_at'])) ?></div>
+                        </td>
                         <td class="px-6 py-4 text-sm">
                             <?php if ($food['active'] === 'Yes'): ?>
                                 <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs"><i class="fas fa-check-circle mr-1"></i> Aktif</span>
@@ -70,7 +75,7 @@ include '../app/views/layouts/admin_header.php';
                     </tr>
                 <?php endforeach; else: ?>
                     <tr>
-                        <td colspan="6" class="px-6 py-16 text-center text-gray-400">
+                        <td colspan="7" class="px-6 py-16 text-center text-gray-400">
                             <div class="mx-auto w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                                 <i class="fas fa-hamburger text-3xl text-gray-300"></i>
                             </div>

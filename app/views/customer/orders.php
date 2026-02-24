@@ -31,12 +31,9 @@ include '../app/views/layouts/header.php';
                                 <td class="px-6 py-4 font-mono font-bold text-gray-800">#<?= htmlspecialchars($order['order_id']) ?></td>
                                 <td class="px-6 py-4 text-sm text-gray-600">
                                     <div class="flex items-center gap-2">
-                                        <i class="far fa-calendar-alt text-gray-400"></i>
-                                        <?= date('d M Y', strtotime($order['tgl_order'] ?? 'now')) ?>
+                                        <?= date('d M Y - H:i', strtotime($order['created_at'])) ?>
                                     </div>
                                 </td>
-                                </td>
-                                <td class="px-6 py-4 font-bold text-gray-800">
                                     Rp <?= number_format($order['total'] ?? 0, 0, ',', '.') ?>
                                 </td>
                                 <td class="px-6 py-4 text-center">

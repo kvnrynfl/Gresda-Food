@@ -20,7 +20,7 @@ include '../app/views/layouts/admin_header.php';
                     <td class="px-6 py-4 w-16">No.</td>
                     <td class="px-6 py-4">Ref Pesanan</td>
                     <td class="px-6 py-4">Info Pelanggan</td>
-                    <td class="px-6 py-4 w-32 text-center">Tanggal Dibuat</td>
+                    <td class="px-6 py-4 w-32 text-center">Tgl Dibuat / Tgl Update</td>
                     <td class="px-6 py-4 text-center w-48">Status Saat Ini</td>
                     <td class="px-6 py-4 text-center w-64">Aksi</td>
                 </tr>
@@ -36,8 +36,9 @@ include '../app/views/layouts/admin_header.php';
                                 <?= htmlspecialchars($order['username'] ?? 'User #'.$order['user_id']) ?>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-500 text-center">
-                            <?= date('d M Y - H:i', strtotime($order['tgl_order'])) ?>
+                        <td class="px-6 py-4 text-xs text-gray-500 text-center font-mono">
+                            <div class="mb-1 text-gray-600" title="Waktu Dibuat"><i class="fas fa-plus-circle text-green-500 mr-1"></i> <?= date('d M y H:i', strtotime($order['created_at'])) ?></div>
+                            <div title="Waktu Pembaharuan"><i class="fas fa-edit text-blue-400 mr-1"></i> <?= date('d M y H:i', strtotime($order['updated_at'])) ?></div>
                         </td>
                         <td class="px-6 py-4 text-center">
                             <?php 

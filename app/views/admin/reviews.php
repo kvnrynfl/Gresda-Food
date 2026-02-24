@@ -16,6 +16,7 @@ include '../app/views/layouts/admin_header.php';
                     <td class="px-6 py-4">Makanan / Pelanggan</td>
                     <td class="px-6 py-4">Penilaian</td>
                     <td class="px-6 py-4">Teks Ulasan</td>
+                    <td class="px-6 py-4 w-32 text-center">Tanggal Dibuat</td>
                     <td class="px-6 py-4 w-32 text-center">Status</td>
                     <td class="px-6 py-4 w-28 text-center">Aksi</td>
                 </tr>
@@ -42,6 +43,9 @@ include '../app/views/layouts/admin_header.php';
                         <td class="px-6 py-4 text-sm text-gray-600 line-clamp-2 md:line-clamp-3 w-64">
                             <?= nl2br(htmlspecialchars($review['message'] ?? '')) ?>
                         </td>
+                        <td class="px-6 py-4 text-sm text-gray-500 font-mono text-center">
+                            <?= date('d M Y, H:i', strtotime($review['created_at'])) ?>
+                        </td>
                         <td class="px-6 py-4 text-center">
                             <?php if (($review['active'] ?? '') === 'Yes'): ?>
                                 <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs">Publik</span>
@@ -59,7 +63,7 @@ include '../app/views/layouts/admin_header.php';
                     </tr>
                 <?php endforeach; else: ?>
                     <tr>
-                        <td colspan="6" class="px-6 py-16 text-center text-gray-400">
+                        <td colspan="7" class="px-6 py-16 text-center text-gray-400">
                             <i class="far fa-comment-dots text-5xl mb-4 text-gray-200"></i>
                             <h3 class="text-xl font-bold text-gray-500 mb-1">Tidak Ada Ulasan</h3>
                             <p>Pelanggan belum mengirimkan umpan balik apa pun.</p>

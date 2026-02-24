@@ -15,6 +15,7 @@ include '../app/views/layouts/admin_header.php';
                     <td class="px-6 py-4 w-16">ID</td>
                     <td class="px-6 py-4">Pengirim</td>
                     <td class="px-6 py-4">Isi Pesan</td>
+                    <td class="px-6 py-4 w-32 text-center">Tanggal Dibuat</td>
                     <td class="px-6 py-4 w-32 text-center">Aksi</td>
                 </tr>
             </thead>
@@ -29,6 +30,9 @@ include '../app/views/layouts/admin_header.php';
                         <td class="px-6 py-4 text-sm text-gray-600 line-clamp-2 md:line-clamp-3">
                             <?= nl2br(htmlspecialchars($contact['customer_message'])) ?>
                         </td>
+                        <td class="px-6 py-4 text-sm text-gray-500 font-mono text-center">
+                            <?= date('d M Y, H:i', strtotime($contact['created_at'])) ?>
+                        </td>
                         <td class="px-6 py-4 text-center">
                             <form action="<?= BASEURL ?>/admin/deleteContact/<?= $contact['id'] ?>" method="POST" onsubmit="return confirm('Hapus pesan ini?');">
                                 <button type="submit" class="w-8 h-8 rounded-full bg-cyan-100 text-cyan-600 inline-flex items-center justify-center hover:bg-cyan-600 hover:text-white transition shadow-sm" title="Hapus Pesan">
@@ -39,7 +43,7 @@ include '../app/views/layouts/admin_header.php';
                     </tr>
                 <?php endforeach; else: ?>
                     <tr>
-                        <td colspan="4" class="px-6 py-16 text-center text-gray-400">
+                        <td colspan="5" class="px-6 py-16 text-center text-gray-400">
                             <i class="fas fa-envelope-open text-5xl mb-4 text-gray-200"></i>
                             <h3 class="text-xl font-bold text-gray-500 mb-1">Kotak Masuk Kosong</h3>
                             <p>Tidak ada pesan kontak saat ini.</p>

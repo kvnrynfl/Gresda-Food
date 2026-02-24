@@ -18,6 +18,7 @@ include '../app/views/layouts/admin_header.php';
                     <td class="px-6 py-4 w-16">ID</td>
                     <td class="px-6 py-4">Nama Lengkap</td>
                     <td class="px-6 py-4">Nama Pengguna</td>
+                    <td class="px-6 py-4">Tanggal Dibuat</td>
                     <td class="px-6 py-4 text-center">Aksi</td>
                 </tr>
             </thead>
@@ -32,6 +33,7 @@ include '../app/views/layouts/admin_header.php';
                             <?php endif; ?>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600">@<?= htmlspecialchars($admin['username']) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-500 font-mono"><?= date('d M Y, H:i', strtotime($admin['created_at'])) ?></td>
                         <td class="px-6 py-4 text-center">
                             <div class="flex items-center justify-center gap-2 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity">
                                 <a href="<?= BASEURL ?>/admin/editAdmin/<?= $admin['id'] ?>" class="w-8 h-8 rounded bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm" title="Edit Profil">
@@ -52,7 +54,7 @@ include '../app/views/layouts/admin_header.php';
                     </tr>
                 <?php endforeach; else: ?>
                     <tr>
-                        <td colspan="4" class="px-6 py-12 text-center text-gray-400">
+                        <td colspan="5" class="px-6 py-12 text-center text-gray-400">
                             <i class="fas fa-user-shield text-4xl mb-3 text-gray-300"></i>
                             <p>Tidak ada personel admin ditemukan.</p>
                         </td>

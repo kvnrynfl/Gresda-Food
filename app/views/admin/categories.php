@@ -18,6 +18,7 @@ include '../app/views/layouts/admin_header.php';
                     <td class="px-6 py-4">ID</td>
                     <td class="px-6 py-4">Nama Tampilan</td>
                     <td class="px-6 py-4">Slug</td>
+                    <td class="px-6 py-4">Dibuat / Diperbarui</td>
                     <td class="px-6 py-4">Status</td>
                     <td class="px-6 py-4 text-center">Aksi</td>
                 </tr>
@@ -28,6 +29,10 @@ include '../app/views/layouts/admin_header.php';
                         <td class="px-6 py-4 text-sm text-gray-500">#<?= $cat['id'] ?></td>
                         <td class="px-6 py-4 font-bold text-gray-800"><?= htmlspecialchars($cat['name']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-500 font-mono"><?= htmlspecialchars($cat['category']) ?></td>
+                        <td class="px-6 py-4 text-xs text-gray-400 font-mono">
+                            <div class="mb-1 text-gray-600"><i class="fas fa-plus-circle text-green-500 mr-1"></i> <?= date('d M y H:i', strtotime($cat['created_at'])) ?></div>
+                            <div><i class="fas fa-edit text-blue-400 mr-1"></i> <?= date('d M y H:i', strtotime($cat['updated_at'])) ?></div>
+                        </td>
                         <td class="px-6 py-4 text-sm">
                             <?php if ($cat['active'] === 'Yes'): ?>
                                 <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs"><i class="fas fa-check-circle mr-1"></i> Aktif</span>
@@ -50,7 +55,7 @@ include '../app/views/layouts/admin_header.php';
                     </tr>
                 <?php endforeach; else: ?>
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-gray-400">
+                        <td colspan="6" class="px-6 py-12 text-center text-gray-400">
                             <i class="fas fa-tags text-4xl mb-3 text-gray-200"></i>
                             <p>Tidak ada kategori yang ditemukan dalam basis data.</p>
                         </td>

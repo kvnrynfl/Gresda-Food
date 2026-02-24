@@ -15,6 +15,7 @@ include '../app/views/layouts/admin_header.php';
                     <td class="px-6 py-4 w-16">ID</td>
                     <td class="px-6 py-4">Nama Pengguna</td>
                     <td class="px-6 py-4">Alamat Email</td>
+                    <td class="px-6 py-4">Terdaftar Pada</td>
                     <td class="px-6 py-4 text-center">Aksi</td>
                 </tr>
             </thead>
@@ -27,6 +28,7 @@ include '../app/views/layouts/admin_header.php';
                             <?= htmlspecialchars($user['username']) ?>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600"><?= htmlspecialchars($user['email']) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-500 font-mono"><?= date('d M Y, H:i', strtotime($user['created_at'])) ?></td>
                         <td class="px-6 py-4 text-center">
                             <form action="<?= BASEURL ?>/admin/deleteUser/<?= $user['id'] ?>" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pelanggan <?= htmlspecialchars($user['username']) ?>?');">
                                 <button type="submit" class="w-8 h-8 rounded bg-cyan-50 text-cyan-600 inline-flex items-center justify-center hover:bg-cyan-600 hover:text-white transition shadow-sm" title="Hapus Akun">
@@ -37,7 +39,7 @@ include '../app/views/layouts/admin_header.php';
                     </tr>
                 <?php endforeach; else: ?>
                     <tr>
-                        <td colspan="4" class="px-6 py-12 text-center text-gray-400">
+                        <td colspan="5" class="px-6 py-12 text-center text-gray-400">
                             <i class="fas fa-users text-4xl mb-3 text-gray-300"></i>
                             <p>Tidak ada pelanggan terdaftar ditemukan.</p>
                         </td>
