@@ -4,13 +4,6 @@ $auth_subheading = "Daftar untuk melakukan pesanan pertama Anda yang lezat!";
 ob_start(); 
 ?>
 
-<!-- Decorative Icon for Register Only -->
-<div class="mb-4 flex justify-center -mt-6">
-    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-100/10 text-cyan-400 shadow-sm border border-cyan-500/30">
-        <i class="fas fa-user-plus text-2xl"></i>
-    </div>
-</div>
-
 <form class="space-y-5" action="<?= BASEURL ?>/auth/register" method="POST">
     <?= CSRF::getTokenField() ?>
     
