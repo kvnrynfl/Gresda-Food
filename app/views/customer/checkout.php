@@ -32,10 +32,10 @@ ob_start();
             
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                 <?php if(isset($data['payment_methods']) && !empty($data['payment_methods'])): foreach($data['payment_methods'] as $index => $pm): ?>
-                <label class="relative border border-gray-200 rounded-xl p-4 flex flex-col items-center cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-cyan-50 transition">
+                <label class="relative border border-gray-200 rounded-2xl p-4 flex flex-col items-center cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-cyan-50 peer-checked:shadow-md transition-all group">
                     <input type="radio" name="payment_method" value="<?= htmlspecialchars($pm['metode']) ?>" data-rek="<?= htmlspecialchars($pm['rekening_number']) ?>" data-an="<?= htmlspecialchars($pm['an']) ?>" class="absolute opacity-0 peer payment-radio" required <?php echo ($index == 0) ? 'checked' : ''; ?>>
-                    <div class="w-full h-full absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-primary pointer-events-none"></div>
-                    <img src="<?= BASEURL ?>/images/payment/<?= htmlspecialchars($pm['image_name']) ?>" alt="<?= htmlspecialchars($pm['metode']) ?>" class="h-8 mb-2 object-contain" onerror="this.src='https://via.placeholder.com/80x30?text=<?= urlencode($pm['metode']) ?>'">
+                    <div class="w-full h-full absolute inset-0 rounded-2xl border-2 border-transparent peer-checked:border-primary pointer-events-none group-hover:bg-cyan-50/30 transition-colors"></div>
+                    <img src="<?= BASEURL ?>/images/payment/<?= htmlspecialchars($pm['image_name']) ?>" alt="<?= htmlspecialchars($pm['metode']) ?>" class="h-8 mb-2 object-contain scale-95 peer-checked:scale-105 transition-transform" onerror="this.src='https://via.placeholder.com/80x30?text=<?= urlencode($pm['metode']) ?>'">
                     <span class="text-sm font-medium text-gray-700 text-center mt-2"><?= htmlspecialchars($pm['metode']) ?></span>
                 </label>
                 <?php endforeach; else: ?>
@@ -98,38 +98,41 @@ document.addEventListener('DOMContentLoaded', function() {
                             <img src="<?= BASEURL ?>/images/foods/<?= htmlspecialchars($item['image_name']) ?>" class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1">
-                            <h4 class="text-sm font-bold text-gray-800 leading-tight"><?= htmlspecialchars($item['name']) ?></h4>
+                            <h4 class="text-sm font-bold text-gray-800 line-clamp-1"><?= htmlspecialchars($item['name']) ?></h4>
                             <div class="flex justify-between items-center mt-1">
-                                <span class="text-xs font-semibold text-gray-500"><?= $item['qty'] ?>x Rp <?= number_format($item['price'], 0, ',', '.') ?></span>
-                                <span class="text-sm font-bold text-secondary">Rp <?= number_format($sub, 0, ',', '.') ?></span>
+                                <span class="text-xs font-semibold text-gray-500"><?= $item['qty'] ?> x Rp <?= number_format($item['price'], 0, ',', '.') ?></span>
+                                <span class="text-sm font-black text-gray-900">Rp <?= number_format($sub, 0, ',', '.') ?></span>
                             </div>
                         </div>
                     </div>
                 <?php 
                     endforeach; 
+                else: 
+                ?>
+                    <div class="text-center text-gray-500 text-sm py-4">Belum ada item yang dipilih untuk checkout.</div>
+                <?php 
                 endif; 
                 $tax = $totalPrice * 0.1;
                 $shipping = isset($data['checkout_items']) && count($data['checkout_items']) > 0 ? 15000 : 0;
                 $grandTotal = $totalPrice + $tax + $shipping;
                 ?>
             </div>
-            
-            <div class="border-t border-gray-100 pt-3 space-y-2 text-sm inline-block w-full">
-                <div class="flex justify-between text-gray-600">
+
+            <!-- Totals -->
+            <div class="border-t border-gray-100 pt-4 space-y-3">
+                <div class="flex justify-between text-sm text-gray-600 font-medium">
                     <span>Subtotal</span>
-                    <span class="font-medium text-gray-800">Rp <?= number_format($totalPrice, 0, ',', '.') ?></span>
+                    <span>Rp <?= number_format($totalPrice, 0, ',', '.') ?></span>
                 </div>
-                <div class="flex justify-between text-gray-600">
+                <div class="flex justify-between text-sm text-gray-600 font-medium">
                     <span>Pajak (10%)</span>
-                    <span class="font-medium text-gray-800">Rp <?= number_format($tax, 0, ',', '.') ?></span>
+                    <span>Rp <?= number_format($tax, 0, ',', '.') ?></span>
                 </div>
-                <div class="flex justify-between text-gray-600">
+                <div class="flex justify-between text-sm text-gray-600 font-medium">
                     <span>Pengiriman</span>
-                    <span class="font-medium text-gray-800">Rp <?= number_format($shipping, 0, ',', '.') ?></span>
+                    <span>Rp <?= number_format($shipping, 0, ',', '.') ?></span>
                 </div>
-            </div>
-            <div class="border-t border-gray-200 pt-3 mt-3">
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center pt-3 border-t border-gray-100 mt-3">
                     <span class="text-base font-bold text-gray-800">Total Pembayaran</span>
                     <span class="text-xl font-black text-primary">Rp <?= number_format($grandTotal, 0, ',', '.') ?></span>
                 </div>
