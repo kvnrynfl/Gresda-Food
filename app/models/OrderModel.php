@@ -155,4 +155,11 @@ class OrderModel extends Database {
         $this->bind(':order_id', $order_id);
         return $this->single();
     }
+
+    public function hasCompletedOrder($user_id) {
+        $this->query("SELECT 1 FROM tbl_orders WHERE user_id = :user_id AND status = 'Finished' LIMIT 1");
+        $this->bind(':user_id', $user_id);
+        $result = $this->single();
+        return !empty($result);
+    }
 }

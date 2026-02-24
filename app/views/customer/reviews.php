@@ -4,7 +4,7 @@ include '../app/views/layouts/header.php';
 ?>
 
 <div class="bg-gray-50 min-h-screen py-12">
-    <div class="container mx-auto px-4 max-w-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-6 border-b border-gray-100 flex items-center gap-3">
                 <a href="<?= BASEURL ?>/customer/orders" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition">
@@ -43,22 +43,22 @@ include '../app/views/layouts/header.php';
                         <div class="flex gap-2">
                             <!-- Basic Select for now to ensure functional parity, can be upgraded to star-rating JS later -->
                             <select name="rating" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition font-bold text-gray-700 text-lg">
-                                <option value="5">⭐⭐⭐⭐⭐ 5 - Sangat Bagus!</option>
-                                <option value="4">⭐⭐⭐⭐ 4 - Sangat Baik</option>
-                                <option value="3">⭐⭐⭐ 3 - Rata-rata</option>
-                                <option value="2">⭐⭐ 2 - Buruk</option>
-                                <option value="1">⭐ 1 - Sangat Buruk</option>
+                                <option value="5" <?= (isset($existing_review['rating']) && $existing_review['rating'] == '5') ? 'selected' : '' ?>>⭐⭐⭐⭐⭐ 5 - Sangat Bagus!</option>
+                                <option value="4" <?= (isset($existing_review['rating']) && $existing_review['rating'] == '4') ? 'selected' : '' ?>>⭐⭐⭐⭐ 4 - Sangat Baik</option>
+                                <option value="3" <?= (isset($existing_review['rating']) && $existing_review['rating'] == '3') ? 'selected' : '' ?>>⭐⭐⭐ 3 - Rata-rata</option>
+                                <option value="2" <?= (isset($existing_review['rating']) && $existing_review['rating'] == '2') ? 'selected' : '' ?>>⭐⭐ 2 - Buruk</option>
+                                <option value="1" <?= (isset($existing_review['rating']) && $existing_review['rating'] == '1') ? 'selected' : '' ?>>⭐ 1 - Sangat Buruk</option>
                             </select>
                         </div>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Pikiran Anda (Opsional)</label>
-                        <textarea name="message" rows="4" placeholder="Beri tahu kami apa yang Anda sukai, atau apa yang bisa kami tingkatkan..." class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition"></textarea>
+                        <textarea name="message" rows="4" placeholder="Beri tahu kami apa yang Anda sukai, atau apa yang bisa kami tingkatkan..." class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition"><?= htmlspecialchars($existing_review['message'] ?? '') ?></textarea>
                     </div>
                     
-                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-cyan-500/30 transition transform hover:-translate-y-0.5 active:translate-y-0">
-                        Kirim Ulasan
+                    <button type="submit" class="w-full <?= isset($existing_review) ? 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/30' : 'bg-cyan-600 hover:bg-cyan-700 shadow-cyan-500/30' ?> text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0">
+                        <?= isset($existing_review) ? 'Perbarui Ulasan' : 'Kirim Ulasan' ?>
                     </button>
                 </form>
             </div>

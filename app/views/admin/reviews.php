@@ -48,17 +48,42 @@ include '../app/views/layouts/admin_header.php';
                         </td>
                         <td class="px-6 py-4 text-center">
                             <?php if (($review['active'] ?? '') === 'Yes'): ?>
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs">Publik</span>
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs inline-flex items-center gap-1"><i class="fas fa-check-circle"></i> Publik</span>
+                            <?php elseif (($review['active'] ?? '') === 'No'): ?>
+                                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-bold text-xs inline-flex items-center gap-1"><i class="fas fa-eye-slash"></i> Sembunyi</span>
                             <?php else: ?>
-                                <span class="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full font-bold text-xs">Sembunyi</span>
+                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-bold text-xs inline-flex items-center gap-1 animate-pulse"><i class="fas fa-clock"></i> Tertunda</span>
                             <?php endif; ?>
                         </td>
                         <td class="px-6 py-4 text-center">
-                            <form action="<?= BASEURL ?>/admin/deleteReview/<?= $review['id'] ?>" method="POST" onsubmit="return confirm('Hapus ulasan ini sepenuhnya?');">
-                                <button type="submit" class="w-8 h-8 rounded-full bg-cyan-100 text-cyan-600 inline-flex items-center justify-center hover:bg-cyan-600 hover:text-white transition shadow-sm" title="Hapus Ulasan">
-                                    <i class="fas fa-trash-alt text-xs"></i>
-                                </button>
-                            </form>
+                            <div class="flex items-center justify-center gap-2">
+                                <?php if (($review['active'] ?? '') !== 'Yes'): ?>
+                                    <form action="<?= BASEURL ?>/admin/updateReviewStatus/<?= $review['id'] ?>" method="POST">
+                                        <?= CSRF::getTokenField() ?>
+                                        <input type="hidden" name="status" value="Yes">
+                                        <button type="submit" class="w-8 h-8 rounded-full bg-green-50 text-green-600 inline-flex items-center justify-center hover:bg-green-600 hover:text-white transition shadow-sm" title="Tampilkan Ulasan">
+                                            <i class="fas fa-check text-xs"></i>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                                
+                                <?php if (($review['active'] ?? '') !== 'No'): ?>
+                                    <form action="<?= BASEURL ?>/admin/updateReviewStatus/<?= $review['id'] ?>" method="POST">
+                                        <?= CSRF::getTokenField() ?>
+                                        <input type="hidden" name="status" value="No">
+                                        <button type="submit" class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 inline-flex items-center justify-center hover:bg-gray-600 hover:text-white transition shadow-sm" title="Sembunyikan Ulasan">
+                                            <i class="fas fa-times text-xs"></i>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+
+                                <form action="<?= BASEURL ?>/admin/deleteReview/<?= $review['id'] ?>" method="POST" onsubmit="return confirm('Hapus ulasan ini sepenuhnya?');">
+                                    <?= CSRF::getTokenField() ?>
+                                    <button type="submit" class="w-8 h-8 rounded-full bg-red-50 text-red-600 inline-flex items-center justify-center hover:bg-red-600 hover:text-white transition shadow-sm" title="Hapus Permanen">
+                                        <i class="fas fa-trash-alt text-xs"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 <?php endforeach; else: ?>

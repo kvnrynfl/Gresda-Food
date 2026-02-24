@@ -355,16 +355,45 @@ class CustomerController extends Controller {
     }
 
     public function reviews() {
-        $this->view('customer/reviews');
+        $orderModel = $this->model('OrderModel');
+        if (!$orderModel->hasCompletedOrder($_SESSION['user_id'])) {
+            $_SESSION['flash_error'] = "Anda harus menyelesaikan minimal 1 pesanan sebelum dapat memberikan ulasan.";
+            $this->redirect('/customer/orders');
+            return;
+        }
+
+        $reviewModel = $this->model('ReviewModel');
+        $data['existing_review'] = $reviewModel->getByUserId($_SESSION['user_id']);
+        
+        $this->view('customer/reviews', $data);
     }
 
     public function submitReview() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
+            $orderModel = $this->model('OrderModel');
+            if (!$orderModel->hasCompletedOrder($_SESSION['user_id'])) {
+                $_SESSION['flash_error'] = "Aksi ditolak. Anda belum memiliki pesanan yang selesai.";
+                $this->redirect('/customer/orders');
+                return;
+            }
+
             $data = Sanitize::array($_POST);
             $data['user_id'] = $_SESSION['user_id'];
             $data['active'] = 'Pending';
             
-            $this->model('ReviewModel')->create($data);
+            $reviewModel = $this->model('ReviewModel');
+            $existing = $reviewModel->getByUserId($_SESSION['user_id']);
+            
+            if ($existing) {
+                // Update existing review and reset status to Pending
+                $reviewModel->update($existing['id'], $data);
+                $_SESSION['flash_success'] = "Ulasan Anda berhasil diperbarui dan sedang menunggu persetujuan admin.";
+            } else {
+                // Create new review
+                $reviewModel->create($data);
+                $_SESSION['flash_success'] = "Terima kasih! Ulasan Anda telah terkirim dan sedang menunggu persetujuan admin.";
+            }
+            
             $this->redirect('/customer/orders');
         }
     }

@@ -247,4 +247,12 @@ class AdminController extends Controller {
             $this->redirect('/admin/reviews');
         }
     }
+
+    public function updateReviewStatus($id) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
+            $status = $_POST['status'] ?? 'No';
+            $this->model('ReviewModel')->updateStatus($id, $status);
+            $this->redirect('/admin/reviews');
+        }
+    }
 }
