@@ -1,7 +1,12 @@
 <?php
 
 class Upload {
-    private static $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    private static $allowedMimeTypes = [
+        'jpg' => 'image/jpeg',
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'webp' => 'image/webp'
+    ];
     private static $maxSize = 5 * 1024 * 1024; // 5 MB
 
     public static function image($file, $destinationDir) {
