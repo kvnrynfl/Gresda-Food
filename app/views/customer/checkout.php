@@ -39,7 +39,7 @@
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                         <?php if(isset($data['payment_methods']) && !empty($data['payment_methods'])): foreach($data['payment_methods'] as $index => $pm): ?>
                         <label class="relative border border-gray-200 rounded-xl p-4 flex flex-col items-center cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-cyan-50 transition">
-                            <input type="radio" name="payment_method" value="<?= htmlspecialchars($pm['metode']) ?>" class="absolute opacity-0 peer" required <?php echo ($index == 0) ? 'checked' : ''; ?>>
+                            <input type="radio" name="payment_method" value="<?= htmlspecialchars($pm['metode']) ?>" data-rek="<?= htmlspecialchars($pm['rekening_number']) ?>" data-an="<?= htmlspecialchars($pm['an']) ?>" class="absolute opacity-0 peer payment-radio" required <?php echo ($index == 0) ? 'checked' : ''; ?>>
                             <div class="w-full h-full absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-primary pointer-events-none"></div>
                             <img src="<?= BASEURL ?>/images/payment/<?= htmlspecialchars($pm['image_name']) ?>" alt="<?= htmlspecialchars($pm['metode']) ?>" class="h-8 mb-2 object-contain" onerror="this.src='https://via.placeholder.com/80x30?text=<?= urlencode($pm['metode']) ?>'">
                             <span class="text-sm font-medium text-gray-700 text-center mt-2"><?= htmlspecialchars($pm['metode']) ?></span>
@@ -51,13 +51,36 @@
                         <?php endif; ?>
                     </div>
 
-                    <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 mb-6">
+                    <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 mb-6" id="payment-details-box">
                         <p class="text-sm tracking-wide text-gray-600 mb-2">Silakan transfer ke nomor rekening berikut setelah pesanan dibuat:</p>
-                        <p class="text-xl font-mono font-bold text-gray-900 tracking-wider">1234 5678 9012 3456</p>
-                        <p class="text-sm font-semibold text-gray-500">A/N Gresda Food & Beverage</p>
+                        <p id="display-rek" class="text-xl font-mono font-bold text-gray-900 tracking-wider">-</p>
+                        <p id="display-an" class="text-sm font-semibold text-gray-500">-</p>
                     </div>
                 </div>
             </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const radios = document.querySelectorAll('.payment-radio');
+    const displayRek = document.getElementById('display-rek');
+    const displayAn = document.getElementById('display-an');
+
+    function updatePaymentDisplay() {
+        const checkedRadio = document.querySelector('.payment-radio:checked');
+        if (checkedRadio) {
+            displayRek.textContent = checkedRadio.getAttribute('data-rek');
+            displayAn.textContent = 'A/N ' + checkedRadio.getAttribute('data-an');
+        }
+    }
+
+    radios.forEach(radio => {
+        radio.addEventListener('change', updatePaymentDisplay);
+    });
+
+    // Initialize display on page load
+    updatePaymentDisplay();
+});
+</script>
 
             <!-- Validation Action & Order Summary -->
             <div class="lg:col-span-1 space-y-6">

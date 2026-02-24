@@ -36,9 +36,9 @@
                 <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-8 max-w-md mx-auto text-center">
                     <p class="text-sm tracking-wide text-gray-600 mb-3">Silakan transfer persis sebesar <strong class="text-gray-900">Rp <?= number_format($order['total'] ?? 0, 0, ',', '.') ?></strong> ke rekening berikut:</p>
                     <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm inline-block w-full">
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Bank Gresda</p>
-                        <p class="text-2xl font-mono font-black text-gray-900 tracking-wider">1234 5678 9012 3456</p>
-                        <p class="text-sm font-semibold text-gray-500 mt-1">A/N Gresda Food & Beverage</p>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1"><?= htmlspecialchars($payment_info['metode'] ?? 'Bank') ?></p>
+                        <p class="text-2xl font-mono font-black text-gray-900 tracking-wider"><?= htmlspecialchars($payment_info['rekening_number'] ?? '-') ?></p>
+                        <p class="text-sm font-semibold text-gray-500 mt-1">A/N <?= htmlspecialchars($payment_info['an'] ?? '-') ?></p>
                     </div>
                 </div>
 
@@ -46,8 +46,14 @@
                     <?= CSRF::getTokenField() ?>
                     <input type="hidden" name="order_id" value="<?= htmlspecialchars($order_id) ?>">
 
+                    <div class="mb-6">
+                        <label for="rekening_name" class="block text-sm font-bold text-gray-800 mb-2">Nama Pemilik Rekening Pengirim <span class="text-red-500">*</span></label>
+                        <input type="text" id="rekening_name" name="rekening_name" required placeholder="Contoh: Budi Santoso" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
+                        <p class="text-xs text-gray-500 mt-2">Nama yang tertera pada rekening/akun asal transfer.</p>
+                    </div>
+
                     <div class="mb-8">
-                        <label class="block text-sm font-bold text-gray-800 mb-3">Unggah Bukti Transfer Transaksi</label>
+                        <label class="block text-sm font-bold text-gray-800 mb-3">Unggah Bukti Transfer Transaksi <span class="text-red-500">*</span></label>
                         <div class="mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-gray-300 border-dashed rounded-xl hover:bg-gray-50 transition relative group" id="upload-container">
                             <div class="space-y-2 text-center" id="upload-content">
                                 <i class="fas fa-receipt text-5xl text-blue-200 group-hover:text-blue-500 transition mb-4"></i>

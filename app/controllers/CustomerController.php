@@ -229,6 +229,13 @@ class CustomerController extends Controller {
 
         $data['order'] = $activeOrder;
         $data['order_id'] = $id;
+        $data['confirm'] = $orderModel->getConfirmOrder($id);
+        
+        $data['payment_info'] = null;
+        if (isset($data['confirm']['payment'])) {
+            $data['payment_info'] = $orderModel->getPaymentMethodByName($data['confirm']['payment']);
+        }
+
         $this->view('customer/payment', $data);
     }
 
@@ -263,8 +270,10 @@ class CustomerController extends Controller {
                 if ($upload['status']) {
                     $image_name = $upload['filename'];
                     
+                    $rekening_name = Sanitize::string($_POST['rekening_name'] ?? '');
+
                     // Update tbl_confirmorder
-                    $orderModel->updateConfirmOrderImage($orderId, $image_name, date('Y-m-d'));
+                    $orderModel->updateConfirmOrderPayment($orderId, $rekening_name, $image_name, date('Y-m-d'));
                     
                     // Update order status to Confirmed so it moves to the next stage
                     $orderModel->updateOrderStatus($orderId, 'Confirmed');
