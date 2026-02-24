@@ -5,7 +5,8 @@
         
         <!-- Welcome Banner -->
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 mt-8">
-            <div class="bg-gradient-to-r from-secondary to-gray-800 h-32 relative">
+            <div class="bg-gradient-to-r from-cyan-600 to-blue-800 h-40 relative flex items-center px-8 sm:px-32">
+                <h1 class="text-white text-2xl font-bold opacity-90 tracking-wide"><i class="fas fa-id-badge mr-2"></i> Dasbor Profil Pengguna</h1>
                 <div class="absolute -bottom-12 left-8">
                     <img src="<?= BASEURL ?>/images/users/<?= htmlspecialchars($user['img_user'] ?? 'default.jpg') ?>" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($user['username'] ?? 'User') ?>&background=E53E3E&color=fff'" alt="Profile" class="w-24 h-24 rounded-full border-4 border-white object-cover shadow-lg bg-white">
                 </div>

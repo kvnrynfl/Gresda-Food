@@ -118,6 +118,42 @@
                         <a href="<?= BASEURL ?>/auth/login" class="px-6 py-2.5 bg-primary text-white rounded-full font-medium hover:bg-cyan-600 transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Masuk</a>
                     <?php endif; ?>
                 </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-500 hover:text-primary focus:outline-none transition <?php echo (isset($title) && $title === 'Home') ? 'text-white' : ''; ?>">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-xl absolute w-full left-0 top-16 z-40 transition-all origin-top">
+            <div class="px-4 pt-2 pb-4 space-y-1">
+                <a href="<?= BASEURL ?>/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">Beranda</a>
+                <a href="<?= BASEURL ?>/about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">Tentang Kami</a>
+                <a href="<?= BASEURL ?>/menu" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">Menu</a>
+                <a href="<?= BASEURL ?>/contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">Kontak</a>
+                
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <a href="<?= BASEURL ?>/customer/cart" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
+                        <i class="fas fa-shopping-cart w-5 mr-1 text-center"></i> Keranjang (<span class="text-primary"><?= $globalCartCount ?? 0 ?></span>)
+                    </a>
+                    <a href="<?= BASEURL ?>/customer/profile" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
+                        <i class="fas fa-user-circle w-5 mr-1 text-center"></i> Dasbor (<?= $_SESSION['username'] ?>)
+                    </a>
+                    <a href="<?= BASEURL ?>/customer/orders" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
+                        <i class="fas fa-history w-5 mr-1 text-center"></i> Riwayat
+                    </a>
+                    <a href="<?= BASEURL ?>/auth/logout" class="block px-3 py-2 rounded-md font-bold text-red-500 hover:bg-red-50 mt-2">
+                        <i class="fas fa-sign-out-alt w-5 mr-1 text-center"></i> Keluar
+                    </a>
+                <?php else: ?>
+                    <a href="<?= BASEURL ?>/auth/login" class="block px-3 py-2 rounded-md text-base font-bold text-primary hover:bg-cyan-50 mt-2 text-center bg-cyan-50">
+                        Masuk / Daftar
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
@@ -152,11 +188,28 @@
                         link.classList.add('text-white');
                         link.classList.remove('text-gray-600');
                     });
+                    if (document.getElementById('mobile-menu-btn')) {
+                        document.getElementById('mobile-menu-btn').classList.add('text-white');
+                        document.getElementById('mobile-menu-btn').classList.remove('text-gray-600');
+                    }
                 }
             });
         });
     </script>
     <?php endif; ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Menu Toggle Logics
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
 
     <!-- Main Content Wrapper -->
     <main class="flex-grow <?php echo (!isset($title) || $title !== 'Home') ? 'pt-16' : ''; ?>">
