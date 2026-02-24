@@ -12,6 +12,24 @@
 <!-- SweetAlert2 Global -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<style>
+    /* Custom Global Animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+    
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+</style>
+
 <!-- Tailwind CSS (CDN for rapid delivery as requested) -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script>

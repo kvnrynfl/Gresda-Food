@@ -1,7 +1,7 @@
 <?php include '../app/views/layouts/header.php'; ?>
 
 <!-- Page Header -->
-<div class="relative bg-secondary text-white pt-32 pb-20 overflow-hidden">
+<div class="relative bg-secondary text-white pt-20 pb-16 overflow-hidden">
     <!-- Decorative background blobs -->
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
         <div class="absolute -top-[20%] -right-[10%] w-[50%] h-[150%] bg-gradient-to-b from-primary to-transparent rounded-full blur-3xl transform rotate-45"></div>
@@ -9,8 +9,8 @@
     </div>
     
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up z-10">
-        <h1 class="text-5xl md:text-6xl font-black mb-6 tracking-tight drop-shadow-lg"><?= htmlspecialchars($title) ?></h1>
-        <p class="text-gray-200 text-lg md:text-xl max-w-2xl mx-auto font-light mb-8">Jelajahi pilihan hidangan premium buatan kami yang dirancang untuk memberi Anda pengalaman kuliner yang tak terlupakan.</p>
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-4"><?= htmlspecialchars($title) ?></h1>
+        <p class="text-gray-300 text-lg max-w-2xl mx-auto">Jelajahi pilihan hidangan premium buatan kami yang dirancang untuk memberi Anda pengalaman kuliner yang tak terlupakan.</p>
     </div>
 </div>
 
@@ -23,7 +23,7 @@
             <div class="lg:w-1/4 flex-shrink-0 space-y-8">
                 
                 <!-- Search Box -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6" data-aos="fade-right" data-aos-delay="100">
                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4">Cari Menu</h3>
                     <form id="search-form" action="<?= BASEURL ?>/menu/fetchFoods" method="GET">
                         <div class="relative">
@@ -37,14 +37,14 @@
                 </div>
 
                 <!-- Categories Vertical -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6" data-aos="fade-right" data-aos-delay="200">
                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4">Kategori</h3>
-                    <div class="space-y-2 flex flex-col category-list">
-                        <a href="javascript:void(0)" data-category="all" class="category-link block px-4 py-3 rounded-xl text-sm font-medium transition <?= ($active_category === 'all') ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700' ?>">
+                    <div class="space-y-0 lg:space-y-2 flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-3 lg:gap-0 pb-2 lg:pb-0 category-list hide-scrollbar">
+                        <a href="javascript:void(0)" data-category="all" class="category-link flex-shrink-0 block px-4 py-3 rounded-xl text-sm font-medium transition <?= ($active_category === 'all') ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700' ?>">
                             Semua Menu
                         </a>
                         <?php foreach($categories as $cat): ?>
-                            <a href="javascript:void(0)" data-category="<?= htmlspecialchars($cat['category']) ?>" class="category-link block px-4 py-3 rounded-xl text-sm font-medium transition <?= ($active_category === $cat['category']) ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700' ?>">
+                            <a href="javascript:void(0)" data-category="<?= htmlspecialchars($cat['category']) ?>" class="category-link flex-shrink-0 block px-4 py-3 rounded-xl text-sm font-medium transition <?= ($active_category === $cat['category']) ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700' ?>">
                                 <?= htmlspecialchars($cat['name']) ?>
                             </a>
                         <?php endforeach; ?>
@@ -53,7 +53,7 @@
             </div>
 
             <!-- Right Content (Top Controls & Food Grid) -->
-            <div class="lg:w-3/4 flex-grow flex flex-col">
+            <div class="lg:w-3/4 flex-grow flex flex-col" data-aos="fade-up" data-aos-delay="300">
                 
                 <!-- Sort Controls & Result Count -->
                 <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 px-2">

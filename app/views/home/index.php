@@ -7,18 +7,18 @@
         <!-- JS will inject layers here -->
     </div>
 
-    <div class="absolute inset-0 z-10 bg-black/60 flex"></div>
+    <div class="absolute inset-0 z-10 bg-black/70 flex"></div>
     
     <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center w-full">
         <div class="flex flex-col items-center max-w-4xl">
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] animate-fade-in-up">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] animate-fade-in-up" data-aos="zoom-out-down" data-aos-duration="1000">
                 Pengalaman <span class="text-primary italic">Rasa Premium</span> 
                 <br>Keunggulan Kuliner
             </h1>
-            <p class="text-xl text-gray-300 mb-10 drop-shadow-md">
+            <p class="text-xl text-gray-300 mb-10 drop-shadow-md" data-aos="fade-up" data-aos-delay="300">
                 Gresda Food & Beverage menawarkan hidangan steak kelas dunia, sajian barat yang lezat, dan suasana yang menenangkan.
             </p>
-        <div class="flex flex-col sm:flex-row gap-4 mt-4">
+        <div class="flex flex-col sm:flex-row gap-4 mt-4" data-aos="fade-up" data-aos-delay="500">
             <a href="menu" class="px-6 py-3 bg-primary text-white rounded-full font-semibold text-base hover:bg-cyan-700 hover:scale-105 transition transform shadow-md flex items-center justify-center gap-2">
                 <i class="fas fa-utensils"></i> Lihat Menu
             </a>
@@ -34,10 +34,10 @@
 <section id="about" class="py-24 bg-white relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-16 items-center">
-            <div class="lg:w-1/2 relative">
+            <div class="lg:w-1/2 relative" data-aos="fade-right">
                 <div class="absolute -inset-4 bg-cyan-100 rounded-3xl transform -rotate-3 z-0"></div>
                 <img src="<?= BASEURL ?>/images/aesthetic/01.jpg" alt="Tentang Gresda Food" class="relative z-10 rounded-2xl shadow-xl w-full object-cover h-[450px]" onerror="this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'">
-                <div class="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-xl z-20 flex items-center gap-4 hidden sm:flex">
+                <div class="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-xl z-20 flex items-center gap-4 hidden sm:flex animate-float">
                     <div class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-bold">5+</div>
                     <div>
                         <p class="font-bold text-secondary">Tahun</p>
@@ -46,23 +46,23 @@
                 </div>
             </div>
             
-            <div class="lg:w-1/2 text-left mt-10 lg:mt-0">
+            <div class="lg:w-1/2 text-left mt-16 lg:mt-0" data-aos="fade-left" data-aos-delay="200">
                 <h2 class="text-primary font-bold tracking-widest uppercase text-sm mb-2">Tentang Kami</h2>
                 <h3 class="text-4xl md:text-5xl font-extrabold text-secondary mb-6 leading-tight">Pengalaman Bersantap tak Terlupakan</h3>
                 <p class="text-lg text-gray-600 mb-6 leading-relaxed">
                     Lebih dari sekadar restoran, Gresda Food & Beverage adalah tempat di mana momen indah diciptakan. Sejak hari pertama, kami berkomitmen untuk menyajikan hidangan yang tidak hanya memuaskan lidah, tapi juga menghangatkan hati.
                 </p>
                 <div class="space-y-4 mb-10">
-                    <div class="flex items-start gap-4">
+                    <div class="flex items-start gap-4" data-aos="fade-up" data-aos-delay="300">
                         <i class="fas fa-check-circle text-primary text-xl mt-1"></i>
                         <p class="text-gray-700"><strong>Bahan Baku Pilihan:</strong> Kami secara ketat menyeleksi daging sapi impor terbaik dan sayuran organik segar setiap harinya.</p>
                     </div>
-                    <div class="flex items-start gap-4">
+                    <div class="flex items-start gap-4" data-aos="fade-up" data-aos-delay="400">
                         <i class="fas fa-check-circle text-primary text-xl mt-1"></i>
                         <p class="text-gray-700"><strong>Koki Berpengalaman:</strong> Dikerjakan oleh tenaga profesional yang menaruh nyawa pada setiap hidangan.</p>
                     </div>
                 </div>
-                <a href="<?= BASEURL ?>/about" class="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-full font-bold text-lg hover:bg-cyan-700 transition transform shadow hover:scale-105">
+                <a href="<?= BASEURL ?>/about" class="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-full font-bold text-lg hover:bg-cyan-700 transition transform shadow hover:scale-105" data-aos="zoom-in" data-aos-delay="500">
                     Kenali Kami Lebih Dekat <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -84,7 +84,7 @@
         </div>
         
         <!-- Horizontal Scrolling Container -->
-        <div class="relative w-full group/slider">
+        <div class="relative w-full group/slider" data-aos="fade-up" data-aos-duration="1000">
             <!-- Navigation Buttons -->
             <button id="scroll-left" class="absolute left-0 top-1/2 -translate-y-1/2 -ml-2 md:-ml-6 z-30 w-12 h-12 bg-white rounded-full shadow-lg text-primary flex items-center justify-center hover:bg-primary hover:text-white transition opacity-0 group-hover/slider:opacity-100 hidden sm:flex">
                 <i class="fas fa-chevron-left"></i>
@@ -93,10 +93,10 @@
                 <i class="fas fa-chevron-right"></i>
             </button>
 
-            <div id="menu-scroll-container" class="flex overflow-x-auto gap-6 pb-8 hide-scrollbar">
+            <div id="menu-scroll-container" class="flex overflow-x-auto gap-6 pb-8 hide-scrollbar pt-4 px-2">
                 <?php if (isset($data['topFoods']) && count($data['topFoods']) > 0): ?>
-                    <?php foreach ($data['topFoods'] as $food): ?>
-                        <div class="min-w-[300px] sm:min-w-[350px] w-[300px] sm:w-[350px] flex-shrink-0 snap-start bg-white rounded-2xl shadow-sm hover:shadow-xl transition flex flex-col overflow-hidden group">
+                    <?php $delay = 100; foreach ($data['topFoods'] as $food): ?>
+                        <div class="min-w-[300px] sm:min-w-[350px] w-[300px] sm:w-[350px] flex-shrink-0 snap-start bg-white rounded-2xl shadow-sm hover:shadow-xl transition flex flex-col overflow-hidden group" data-aos="zoom-in" data-aos-delay="<?= $delay ?>">
                             <div class="relative h-56 overflow-hidden">
                                 <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition z-10"></div>
                                 <?php 
@@ -133,13 +133,13 @@
 <?php if (isset($data['reviews']) && count($data['reviews']) > 0): ?>
 <section id="reviews" class="py-24 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
+        <div class="text-center mb-16" data-aos="fade-down" data-aos-duration="800">
             <h2 class="text-primary font-bold tracking-widest uppercase text-sm mb-2">Testimoni</h2>
             <h3 class="text-4xl font-extrabold text-secondary mb-4">Ulasan Pengunjung</h3>
             <p class="text-gray-500 max-w-2xl mx-auto">Lihat apa yang dikatakan pelanggan kami tentang pengalaman bersantap mereka di Gresda Food & Beverage.</p>
         </div>
         
-        <div class="relative w-full group/review-slider">
+        <div class="relative w-full group/review-slider" data-aos="fade-up" data-aos-duration="1000">
             <button id="review-scroll-left" class="absolute left-0 top-1/2 -translate-y-1/2 -ml-2 md:-ml-6 z-30 w-12 h-12 bg-white rounded-full shadow-lg text-primary flex items-center justify-center hover:bg-primary hover:text-white transition opacity-0 group-hover/review-slider:opacity-100 hidden sm:flex">
                 <i class="fas fa-chevron-left"></i>
             </button>
@@ -148,8 +148,8 @@
             </button>
 
             <div id="review-scroll-container" class="flex overflow-x-auto gap-6 pb-8 pt-4 px-4 hide-scrollbar">
-                <?php foreach ($data['reviews'] as $review): ?>
-                <div class="min-w-[300px] md:min-w-[400px] w-[300px] md:w-[400px] flex-shrink-0 snap-center bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl transition flex flex-col">
+                <?php $rDelay=100; foreach ($data['reviews'] as $review): ?>
+                <div class="min-w-[300px] md:min-w-[400px] w-[300px] md:w-[400px] flex-shrink-0 snap-center bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl transition flex flex-col" data-aos="fade-up" data-aos-delay="<?= $rDelay ?>">
                     <div class="flex items-center gap-1 mb-4 text-yellow-500">
                         <?php 
                         $rating = (float)$review['rating'];
@@ -173,7 +173,7 @@
                         </div>
                     </div>
                 </div>
-                <?php endforeach; ?>
+                <?php $rDelay+=100; endforeach; ?>
             </div>
         </div>
     </div>
@@ -185,7 +185,7 @@
     <div class="absolute inset-0 z-0">
         <img src="<?= BASEURL ?>/images/aesthetic/02.jpg" class="w-full h-full object-cover opacity-20 filter grayscale" alt="Background">
     </div>
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center text-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center text-white" data-aos="zoom-in" data-aos-duration="800">
         <h2 class="text-3xl md:text-5xl font-bold mb-6">Siap Menikmati Hidangan Kami?</h2>
         <p class="text-xl text-gray-300 mb-10">Kunjungi lokasi kami atau hubungi kami untuk reservasi dan pertanyaan lebih lanjut. Kami menantikan kehadiran Anda.</p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">

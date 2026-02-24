@@ -16,7 +16,7 @@ $class = $class ?? '';
 $body_class = $body_class ?? 'p-6 sm:p-8';
 ?>
 
-<div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden <?= $class ?>">
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden <?= $class ?>" data-aos="fade-up" data-aos-duration="600">
     <?php if($title || $description || isset($header_action)): ?>
         <div class="px-6 py-5 sm:px-8 sm:py-6 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
             <div>

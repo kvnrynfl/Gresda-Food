@@ -4,14 +4,21 @@ $auth_subheading = "Daftar untuk melakukan pesanan pertama Anda yang lezat!";
 ob_start(); 
 ?>
 
-<form class="space-y-5" action="<?= BASEURL ?>/auth/register" method="POST">
+<form class="space-y-6" action="<?= BASEURL ?>/auth/register" method="POST" data-aos="fade-up" data-aos-duration="800">
     <?= CSRF::getTokenField() ?>
     
-    <?php 
-    $props = ['name' => 'full_name', 'label' => 'Nama Lengkap', 'icon' => 'fas fa-id-card', 'required' => true];
-    include '../app/views/components/ui/input.php';
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <?php 
+        $props = ['name' => 'first_name', 'label' => 'Nama Depan', 'icon' => 'fas fa-user', 'placeholder' => 'Budi', 'required' => true];
+        include '../app/views/components/ui/input.php';
+        
+        $props = ['name' => 'last_name', 'label' => 'Nama Belakang', 'icon' => 'far fa-user', 'placeholder' => 'Santoso', 'required' => true];
+        include '../app/views/components/ui/input.php';
+        ?>
+    </div>
 
-    $props = ['name' => 'username', 'label' => 'Nama Pengguna', 'icon' => 'fas fa-user', 'required' => true];
+    <?php
+    $props = ['name' => 'username', 'label' => 'Nama Pengguna', 'icon' => 'fas fa-at', 'placeholder' => 'budi_santoso', 'required' => true];
     include '../app/views/components/ui/input.php';
 
     $props = ['name' => 'email', 'type' => 'email', 'label' => 'Alamat Email', 'icon' => 'fas fa-envelope', 'required' => true];
@@ -20,6 +27,10 @@ ob_start();
     $props = ['name' => 'password', 'type' => 'password', 'label' => 'Kata Sandi', 'icon' => 'fas fa-lock', 'placeholder' => 'Minimal 8 karakter', 'required' => true];
     include '../app/views/components/ui/input.php';
     ?>
+    <p class="text-xs text-gray-500 -mt-2.5 ml-1 flex items-center gap-1">
+        <i class="fas fa-info-circle text-primary"></i> 
+        Gunakan kombinasi huruf, angka, & simbol agar lebih kuat.
+    </p>
 
     <div class="flex items-start mt-4">
         <div class="flex items-center h-5">
@@ -28,7 +39,7 @@ ob_start();
         <label for="terms" class="ml-2 text-sm font-medium text-gray-900">Saya setuju dengan <a href="<?= BASEURL ?>/legal/terms" target="_blank" class="text-primary hover:text-cyan-700 hover:underline">Syarat & Ketentuan</a> serta <a href="<?= BASEURL ?>/legal/privacy" target="_blank" class="text-primary hover:text-cyan-700 hover:underline">Kebijakan Privasi</a>.</label>
     </div>
 
-    <div class="pt-2">
+    <div>
         <?php 
         $props = ['text' => 'Buat Akun', 'type' => 'submit', 'variant' => 'primary', 'w_full' => true, 'class' => 'border-b-4 border-cyan-700 text-lg'];
         include '../app/views/components/ui/button.php';

@@ -1,5 +1,5 @@
 <!-- Navigation Bar -->
-<nav id="navbar" class="transition-all duration-300 fixed w-full z-50 <?php echo (isset($title) && $title === 'Home') ? 'bg-transparent py-4 text-white' : 'bg-white shadow-md text-gray-800 py-0 border-b border-gray-100'; ?>">
+<nav id="navbar" class="transition-all duration-300 fixed w-full z-50 <?php echo (isset($title) && $title === 'Home') ? 'bg-transparent py-4 text-white' : 'bg-white shadow-md text-gray-800 py-0 border-b border-gray-100'; ?>" data-aos="fade-down" data-aos-duration="600">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16 transition-all duration-300" id="nav-container">
             <!-- Logo -->
@@ -101,35 +101,35 @@
         </div>
     </div>
 
-    <!-- Mobile Menu (Hidden by default) -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-xl absolute w-full left-0 top-16 z-40 transition-all origin-top">
-        <div class="px-4 pt-2 pb-4 space-y-1">
-            <a href="<?= BASEURL ?>/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">Beranda</a>
-            <a href="<?= BASEURL ?>/about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">Tentang Kami</a>
-            <a href="<?= BASEURL ?>/menu" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">Menu</a>
-            <a href="<?= BASEURL ?>/contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">Kontak</a>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden bg-white border-t border-gray-100 shadow-2xl absolute w-full left-0 top-16 z-40 transition-all duration-300 origin-top opacity-0 pointer-events-none -translate-y-2 rounded-b-2xl">
+        <div class="px-4 pt-2 pb-6 space-y-1">
+            <a href="<?= BASEURL ?>/" class="block px-3 py-2.5 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 transition">Beranda</a>
+            <a href="<?= BASEURL ?>/about" class="block px-3 py-2.5 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 transition">Tentang Kami</a>
+            <a href="<?= BASEURL ?>/menu" class="block px-3 py-2.5 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 transition">Menu</a>
+            <a href="<?= BASEURL ?>/contact" class="block px-3 py-2.5 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 transition">Kontak</a>
             
             <?php if(isset($_SESSION['role'])): ?>
                 <?php if($_SESSION['role'] === 'customer'): ?>
-                <a href="<?= BASEURL ?>/customer/cart" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
+                <a href="<?= BASEURL ?>/customer/cart" class="block px-3 py-2.5 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 transition">
                     <i class="fas fa-shopping-cart w-5 mr-1 text-center"></i> Keranjang (<span id="mobile-nav-cart-badge" class="text-primary"><?= $globalCartCount ?? 0 ?></span>)
                 </a>
-                <a href="<?= BASEURL ?>/customer/profile" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
+                <a href="<?= BASEURL ?>/customer/profile" class="block px-3 py-2.5 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 transition">
                     <i class="fas fa-user-circle w-5 mr-1 text-center"></i> Profil Saya
                 </a>
-                <a href="<?= BASEURL ?>/customer/orders" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
+                <a href="<?= BASEURL ?>/customer/orders" class="block px-3 py-2.5 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 transition">
                     <i class="fas fa-history w-5 mr-1 text-center"></i> Riwayat
                 </a>
                 <?php else: ?>
-                <a href="<?= BASEURL ?>/admin/dashboard" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
+                <a href="<?= BASEURL ?>/admin/dashboard" class="block px-3 py-2.5 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 transition">
                     <i class="fas fa-tachometer-alt w-5 mr-1 text-center"></i> Dashboard Admin
                 </a>
                 <?php endif; ?>
-                <a href="<?= BASEURL ?>/auth/logout" class="block px-3 py-2 rounded-md font-bold text-red-500 hover:bg-red-50 mt-2 border-t border-gray-50">
+                <a href="<?= BASEURL ?>/auth/logout" class="block px-3 py-2.5 rounded-xl font-bold text-red-500 hover:bg-red-50 mt-4 border border-red-100 transition">
                     <i class="fas fa-sign-out-alt w-5 mr-1 text-center"></i> Keluar
                 </a>
             <?php else: ?>
-                <a href="<?= BASEURL ?>/auth/login" class="block px-3 py-2 rounded-md text-base font-bold text-primary hover:bg-cyan-50 mt-2 text-center bg-cyan-50">
+                <a href="<?= BASEURL ?>/auth/login" class="block px-3 py-3 rounded-xl text-base font-bold text-white bg-primary hover:bg-cyan-600 mt-4 text-center shadow-md transition">
                     Masuk / Daftar
                 </a>
             <?php endif; ?>
@@ -184,7 +184,11 @@
         const mobileMenu = document.getElementById('mobile-menu');
         if (mobileBtn && mobileMenu) {
             mobileBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('opacity-0');
+                mobileMenu.classList.toggle('opacity-100');
+                mobileMenu.classList.toggle('pointer-events-none');
+                mobileMenu.classList.toggle('-translate-y-2');
+                mobileMenu.classList.toggle('translate-y-0');
             });
         }
     });

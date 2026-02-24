@@ -4,7 +4,7 @@ $auth_subheading = "Masuk untuk mengelola keranjang, pesanan, dan profil Anda.";
 ob_start(); 
 ?>
 
-<form class="space-y-6" action="<?= BASEURL ?>/auth/login" method="POST">
+<form class="space-y-6" action="<?= BASEURL ?>/auth/login" method="POST" data-aos="fade-up" data-aos-duration="800">
     <?= CSRF::getTokenField() ?>
     
     <?php 
@@ -18,7 +18,7 @@ ob_start();
     ?>
 
     <div class="flex items-center justify-between">
-        <div class="flex items-center hidden">
+        <div class="flex items-center">
             <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
             <label for="remember-me" class="ml-2 block text-sm text-gray-900">
                 Ingat saya
@@ -26,7 +26,7 @@ ob_start();
         </div>
 
         <div class="text-sm">
-            <a href="#" class="font-medium text-primary hover:text-cyan-700 transition">
+            <a href="javascript:void(0)" onclick="Swal.fire({title: 'Hubungi Admin', text: 'Fitur reset otomatis sedang dalam pengembangan. Silakan hubungi tim Admin kami untuk mereset kata sandi Anda.', icon: 'info', confirmButtonColor: '#06b6d4'})" class="font-medium text-primary hover:text-cyan-700 transition">
                 Lupa kata sandi Anda?
             </a>
         </div>

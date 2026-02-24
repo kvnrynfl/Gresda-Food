@@ -39,6 +39,50 @@
     </div>
 </footer>
 
+<!-- WhatsApp FAB -->
+<a href="https://wa.me/6281234567890" target="_blank" class="fixed bottom-24 right-8 bg-green-500 hover:bg-green-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all duration-300 group z-40" aria-label="Chat WhatsApp">
+    <i class="fab fa-whatsapp text-3xl"></i>
+    <span class="absolute right-16 bg-gray-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-md">Hubungi Kami</span>
+</a>
+
+<!-- Back to Top Button -->
+<button id="back-to-top" class="fixed bottom-8 right-8 bg-primary text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-xl hover:bg-cyan-700 hover:-translate-y-1 transition-all duration-300 z-40 opacity-0 pointer-events-none focus:outline-none" aria-label="Back to Top">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
 <script>
     const baseUrl = '<?= BASEURL ?>';
+
+    // Back to top functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        const backToTopBtn = document.getElementById('back-to-top');
+        if (backToTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+                    backToTopBtn.classList.add('opacity-100');
+                } else {
+                    backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+                    backToTopBtn.classList.remove('opacity-100');
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    });
+</script>
+
+<!-- AOS Animation Library Initialization -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({
+            once: true,
+            offset: 50,
+            duration: 800,
+            easing: 'ease-out-cubic',
+        });
+    });
 </script>
