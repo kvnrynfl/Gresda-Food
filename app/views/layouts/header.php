@@ -82,7 +82,7 @@
                     <?php if(isset($_SESSION['role'])): 
                         $globalCartCount = 0;
                         if($_SESSION['role'] === 'customer') {
-                            require_once '../app/models/OrderModel.php';
+                            require_once __DIR__ . '/../../models/OrderModel.php';
                             if(class_exists('OrderModel')) {
                                 $om = new OrderModel();
                                 $ac = $om->getActiveCartByUser($_SESSION['user_id']);
