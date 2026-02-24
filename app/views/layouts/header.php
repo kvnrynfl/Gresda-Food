@@ -85,11 +85,8 @@
                             require_once __DIR__ . '/../../models/OrderModel.php';
                             if(class_exists('OrderModel')) {
                                 $om = new OrderModel();
-                                $ac = $om->getActiveCartByUser($_SESSION['user_id']);
-                                if($ac) {
-                                    $globalItems = $om->getOrderDetails($ac['order_id']);
-                                    $globalCartCount = count($globalItems);
-                                }
+                                $globalItems = $om->getCartItemsByUser($_SESSION['user_id']);
+                                $globalCartCount = count($globalItems);
                             }
                         }
                     ?>
