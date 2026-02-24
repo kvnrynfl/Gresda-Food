@@ -36,7 +36,7 @@ ob_start();
     <div class="md:w-3/4 prose prose-cyan max-w-none text-gray-700 leading-relaxed bg-white p-8 sm:p-12 rounded-3xl shadow-sm border border-gray-50">
         <p class="text-lg font-medium mb-8 text-gray-800">Selamat datang di Gresda Food! Dengan mendaftar, mengakses, atau menggunakan layanan platform kami, Anda menyetujui untuk terikat oleh Syarat dan Ketentuan berikut.</p>
         
-        <h3 id="pendaftaran-akun" class="text-2xl font-bold text-gray-900 mt-10 mb-4 flex items-center gap-3 pt-4">
+        <h3 id="pendaftaran-akun" class="text-2xl font-bold text-gray-900 mt-10 mb-4 flex items-center gap-3 pt-4 scroll-mt-28">
         <span class="bg-cyan-100 text-cyan-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span> 
         Pendaftaran dan Akun Pengguna
     </h3>
@@ -46,7 +46,7 @@ ob_start();
         <li class="pl-2">Gresda Food berhak untuk menangguhkan atau mengakhiri akun jika ditemukan pelanggaran terhadap ketentuan ini atau tindakan penipuan.</li>
     </ol>
 
-    <h3 id="pemesanan-pembayaran" class="text-2xl font-bold text-gray-900 mt-10 mb-4 flex items-center gap-3 pt-4">
+    <h3 id="pemesanan-pembayaran" class="text-2xl font-bold text-gray-900 mt-10 mb-4 flex items-center gap-3 pt-4 scroll-mt-28">
         <span class="bg-cyan-100 text-cyan-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span> 
         Pemesanan dan Pembayaran
     </h3>
@@ -57,7 +57,7 @@ ob_start();
         <li class="pl-2">Dana yang telah ditransfer tidak dapat dikembalikan (Non-refundable) kecuali pesanan dibatalkan oleh pihak restoran akibat kehabisan stok atau kendala internal.</li>
     </ul>
 
-    <h3 id="pengiriman" class="text-2xl font-bold text-gray-900 mt-10 mb-4 flex items-center gap-3 pt-4">
+    <h3 id="pengiriman" class="text-2xl font-bold text-gray-900 mt-10 mb-4 flex items-center gap-3 pt-4 scroll-mt-28">
         <span class="bg-cyan-100 text-cyan-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">3</span> 
         Pengiriman
     </h3>
