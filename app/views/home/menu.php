@@ -1,55 +1,115 @@
 <?php include '../app/views/layouts/header.php'; ?>
 
 <!-- Page Header -->
-<div class="bg-secondary text-white pt-24 pb-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
-        <h1 class="text-4xl md:text-5xl font-extrabold mb-4"><?= htmlspecialchars($title) ?></h1>
-        <p class="text-gray-300 text-lg max-w-2xl mx-auto">Jelajahi pilihan hidangan premium buatan kami yang dirancang untuk memberi Anda pengalaman kuliner yang tak terlupakan.</p>
+<div class="relative bg-secondary text-white pt-32 pb-20 overflow-hidden">
+    <!-- Decorative background blobs -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
+        <div class="absolute -top-[20%] -right-[10%] w-[50%] h-[150%] bg-gradient-to-b from-primary to-transparent rounded-full blur-3xl transform rotate-45"></div>
+        <div class="absolute top-[40%] -left-[20%] w-[60%] h-[100%] bg-gradient-to-t from-cyan-600 to-transparent rounded-full blur-3xl transform -rotate-12"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up z-10">
+        <h1 class="text-5xl md:text-6xl font-black mb-6 tracking-tight drop-shadow-lg"><?= htmlspecialchars($title) ?></h1>
+        <p class="text-gray-200 text-lg md:text-xl max-w-2xl mx-auto font-light mb-8">Jelajahi pilihan hidangan premium buatan kami yang dirancang untuk memberi Anda pengalaman kuliner yang tak terlupakan.</p>
     </div>
 </div>
 
-<!-- Category Filters -->
-<div class="bg-white border-b border-gray-200">
+<!-- Main Layout -->
+<section class="py-12 bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex overflow-x-auto py-4 gap-2 scrollbar-hide snap-x">
-            <a href="<?= BASEURL ?>/menu" class="whitespace-nowrap px-6 py-2 rounded-full font-medium transition <?= ($active_category === 'all') ? 'bg-primary text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' ?>">
-                Semua Kategori
-            </a>
-            <?php foreach($categories as $cat): ?>
-                <a href="<?= BASEURL ?>/menu/category/<?= urlencode($cat['category']) ?>" class="whitespace-nowrap px-6 py-2 rounded-full font-medium transition <?= ($active_category === $cat['category']) ? 'bg-primary text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' ?>">
-                    <?= htmlspecialchars($cat['name']) ?>
-                </a>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</div>
-
-<!-- Main Menu Grid -->
-<section class="py-16 bg-gray-50 min-h-[50vh]">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <?php if(empty($foods)): ?>
-            <div class="text-center py-20 text-gray-500">
-                <i class="fas fa-search text-6xl mb-4 text-gray-300"></i>
-                <h3 class="text-2xl font-bold text-gray-700 mb-2">Tidak ada makanan ditemukan</h3>
-                <p>Kami tidak dapat menemukan item apa pun dalam kategori ini.</p>
-            </div>
-        <?php else: ?>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                <?php foreach($foods as $food): ?>
-                    <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition flex flex-col overflow-hidden group">
-                        <div class="relative h-56 overflow-hidden">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition z-10"></div>
-                            <img src="<?= BASEURL ?>/images/foods/<?= htmlspecialchars($food['image_name']) ?>" alt="<?= htmlspecialchars($food['name']) ?>" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'">
-                            <span class="absolute top-4 right-4 bg-white text-secondary font-bold px-3 py-1 rounded-full shadow z-20">Rp <?= number_format($food['price'] ?? 0, 0, ',', '.') ?></span>
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            <!-- Left Sidebar (Filters & Search) -->
+            <div class="lg:w-1/4 flex-shrink-0 space-y-8">
+                
+                <!-- Search Box -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4">Cari Menu</h3>
+                    <form action="<?= BASEURL ?>/menu<?= $active_category !== 'all' ? '/category/'.urlencode($active_category) : '' ?>" method="GET">
+                        <div class="relative">
+                            <input type="text" name="q" value="<?= htmlspecialchars($search_keyword ?? '') ?>" placeholder="Cari nama atau deskripsi..." class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition text-sm">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <?php if(!empty($active_sort)): ?>
+                                <input type="hidden" name="sort" value="<?= htmlspecialchars($active_sort) ?>">
+                            <?php endif; ?>
                         </div>
-                        <div class="p-6 flex-grow flex flex-col">
-                            <h4 class="text-xl font-bold text-gray-800 mb-2"><?= htmlspecialchars($food['name']) ?></h4>
-                            <p class="text-gray-500 text-sm mb-4 line-clamp-3"><?= htmlspecialchars($food['description']) ?></p>
-                            <div class="mt-auto pt-4 border-t border-gray-100">
+                        <button type="submit" class="hidden">Cari</button>
+                    </form>
+                </div>
+
+                <!-- Categories Vertical -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4">Kategori</h3>
+                    <div class="space-y-2 flex flex-col">
+                        <a href="<?= BASEURL ?>/menu<?= !empty($search_keyword) ? '?q='.urlencode($search_keyword).(!empty($active_sort) ? '&sort='.$active_sort : '') : (!empty($active_sort) ? '?sort='.$active_sort : '') ?>" class="block px-4 py-3 rounded-xl text-sm font-medium transition <?= ($active_category === 'all') ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700' ?>">
+                            Semua Menu
+                        </a>
+                        <?php foreach($categories as $cat): ?>
+                            <a href="<?= BASEURL ?>/menu/category/<?= urlencode($cat['category']) ?><?= !empty($search_keyword) ? '?q='.urlencode($search_keyword).(!empty($active_sort) ? '&sort='.$active_sort : '') : (!empty($active_sort) ? '?sort='.$active_sort : '') ?>" class="block px-4 py-3 rounded-xl text-sm font-medium transition <?= ($active_category === $cat['category']) ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700' ?>">
+                                <?= htmlspecialchars($cat['name']) ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content (Top Controls & Food Grid) -->
+            <div class="lg:w-3/4 flex-grow flex flex-col">
+                
+                <!-- Sort Controls & Result Count -->
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 px-2">
+                    <div class="text-gray-600 text-sm font-medium">
+                        Menampilkan <span class="font-bold text-gray-900"><?= count($foods) ?></span> menu 
+                        <?php if(!empty($search_keyword)): ?>
+                            untuk pencarian "<span class="italic font-bold text-secondary"><?= htmlspecialchars($search_keyword) ?></span>"
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <label class="text-sm text-gray-500 font-medium whitespace-nowrap">Urutkan:</label>
+                        <select onchange="updateSort(this.value)" class="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 shadow-sm outline-none cursor-pointer">
+                            <option value="newest" <?= $active_sort === 'newest' ? 'selected' : '' ?>>Terbaru</option>
+                            <option value="price_asc" <?= $active_sort === 'price_asc' ? 'selected' : '' ?>>Harga: Rendah ke Tinggi</option>
+                            <option value="price_desc" <?= $active_sort === 'price_desc' ? 'selected' : '' ?>>Harga: Tinggi ke Rendah</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Grid -->
+                <?php if(empty($foods)): ?>
+                    <div class="text-center py-20 text-gray-500 bg-white rounded-3xl border border-gray-100 shadow-sm flex-grow flex flex-col items-center justify-center">
+                        <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-search text-4xl text-gray-300"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-700 mb-2">Menu tidak ditemukan</h3>
+                        <p>Coba gunakan kata kunci lain atau hapus filter kategori.</p>
+                        <a href="<?= BASEURL ?>/menu" class="mt-6 px-6 py-2.5 bg-primary text-white font-semibold rounded-full hover:bg-cyan-700 transition">Reset Pencarian</a>
+                    </div>
+                <?php else: ?>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <?php foreach($foods as $food): ?>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100/50 hover:shadow-2xl hover:border-cyan-100 transition-all duration-300 flex flex-col overflow-hidden group transform hover:-translate-y-1">
+                        <div class="relative h-64 overflow-hidden bg-gray-100">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent group-hover:from-gray-900/60 transition-all z-10"></div>
+                            <img src="<?= BASEURL ?>/images/foods/<?= htmlspecialchars($food['image_name']) ?>" alt="<?= htmlspecialchars($food['name']) ?>" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 ease-in-out" onerror="this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'">
+                            <div class="absolute bottom-4 left-4 z-20">
+                                <span class="bg-white text-secondary font-black px-4 py-1.5 rounded-full shadow-lg text-lg ring-4 ring-white/30 truncate block max-w-full">
+                                    Rp <?= number_format($food['price'] ?? 0, 0, ',', '.') ?>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col relative bg-white">
+                            <div class="mb-4 flex-grow">
+                                <h4 class="text-xl font-bold text-gray-800 mb-2 leading-tight group-hover:text-cyan-700 transition-colors line-clamp-2"><?= htmlspecialchars($food['name']) ?></h4>
+                                <p class="text-gray-500 text-sm leading-relaxed line-clamp-3"><?= htmlspecialchars($food['description']) ?></p>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-gray-50">
                                 <form action="<?= BASEURL ?>/customer/addToCart" method="POST">
                                     <input type="hidden" name="food_id" value="<?= $food['food_id'] ?>">
-                                    <button type="submit" class="w-full py-3 bg-white border border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition flex items-center justify-center gap-2 group-hover:shadow-md">
-                                        <i class="fas fa-shopping-cart"></i> Tambah ke Keranjang
+                                    <input type="hidden" name="qty" value="1">
+                                    <button type="submit" class="w-full py-3.5 bg-gray-50 border border-gray-200 text-secondary font-bold rounded-xl hover:bg-primary hover:border-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn relative overflow-hidden">
+                                        <span class="relative z-10 flex items-center gap-2"><i class="fas fa-shopping-cart text-lg"></i> Tambah ke Keranjang</span>
+                                        <div class="absolute inset-0 h-full w-0 bg-primary transition-all duration-300 ease-out group-hover/btn:w-full z-0"></div>
                                     </button>
                                 </form>
                             </div>
@@ -60,6 +120,14 @@
         <?php endif; ?>
     </div>
 </section>
+
+<script>
+    function updateSort(val) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sort', val);
+        window.location.search = urlParams.toString();
+    }
+</script>
 
 <style>
     /* Hide scrollbar for category menu but allow scrolling */

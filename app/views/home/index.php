@@ -139,36 +139,42 @@
             <p class="text-gray-500 max-w-2xl mx-auto">Lihat apa yang dikatakan pelanggan kami tentang pengalaman bersantap mereka di Gresda Food & Beverage.</p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <?php 
-            $displayReviews = array_slice($data['reviews'], 0, 3); // Tampilkan maksimal 3 ulasan di beranda
-            foreach ($displayReviews as $review): 
-            ?>
-            <div class="bg-gray-50 rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition">
-                <div class="flex items-center gap-1 mb-4 text-yellow-500">
-                    <?php 
-                    $rating = (float)$review['rating'];
-                    for($i=1; $i<=5; $i++): 
-                        if ($rating >= $i) {
-                            echo '<i class="fas fa-star"></i>';
-                        } elseif ($rating >= $i - 0.5) {
-                            echo '<i class="fas fa-star-half-alt"></i>';
-                        } else {
-                            echo '<i class="fas fa-star text-gray-300"></i>';
-                        }
-                    endfor; 
-                    ?>
-                </div>
-                <p class="text-gray-700 italic mb-6 leading-relaxed line-clamp-4">"<?= htmlspecialchars($review['message']) ?>"</p>
-                <div class="flex items-center gap-4 mt-auto">
-                    <img src="<?= BASEURL ?>/images/users/<?= htmlspecialchars($review['img_user'] ?? 'default.jpg') ?>" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($review['username'] ?? 'User') ?>&background=E53E3E&color=fff'" alt="<?= htmlspecialchars($review['username']) ?>" class="w-12 h-12 rounded-full object-cover shadow-sm bg-white">
-                    <div>
-                        <h4 class="font-bold text-secondary text-sm"><?= htmlspecialchars($review['username']) ?></h4>
-                        <span class="text-xs text-gray-500">Pelanggan Gresda</span>
+        <div class="relative w-full group/review-slider">
+            <button id="review-scroll-left" class="absolute left-0 top-1/2 -translate-y-1/2 -ml-2 md:-ml-6 z-30 w-12 h-12 bg-white rounded-full shadow-lg text-primary flex items-center justify-center hover:bg-primary hover:text-white transition opacity-0 group-hover/review-slider:opacity-100 hidden sm:flex">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button id="review-scroll-right" class="absolute right-0 top-1/2 -translate-y-1/2 -mr-2 md:-mr-6 z-30 w-12 h-12 bg-white rounded-full shadow-lg text-primary flex items-center justify-center hover:bg-primary hover:text-white transition opacity-0 group-hover/review-slider:opacity-100 hidden sm:flex">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <div id="review-scroll-container" class="flex overflow-x-auto gap-6 pb-8 pt-4 px-4 snap-x snap-mandatory hide-scrollbar scroll-smooth">
+                <?php foreach ($data['reviews'] as $review): ?>
+                <div class="min-w-[300px] md:min-w-[400px] w-[300px] md:w-[400px] flex-shrink-0 snap-center bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl transition flex flex-col">
+                    <div class="flex items-center gap-1 mb-4 text-yellow-500">
+                        <?php 
+                        $rating = (float)$review['rating'];
+                        for($i=1; $i<=5; $i++): 
+                            if ($rating >= $i) {
+                                echo '<i class="fas fa-star"></i>';
+                            } elseif ($rating >= $i - 0.5) {
+                                echo '<i class="fas fa-star-half-alt"></i>';
+                            } else {
+                                echo '<i class="fas fa-star text-gray-300"></i>';
+                            }
+                        endfor; 
+                        ?>
+                    </div>
+                    <p class="text-gray-700 italic mb-6 leading-relaxed flex-grow line-clamp-4">"<?= htmlspecialchars($review['message']) ?>"</p>
+                    <div class="flex items-center gap-4 mt-auto border-t border-gray-50 pt-4">
+                        <img src="<?= BASEURL ?>/images/users/<?= htmlspecialchars($review['img_user'] ?? 'default.jpg') ?>" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($review['username'] ?? 'User') ?>&background=E53E3E&color=fff'" alt="<?= htmlspecialchars($review['username']) ?>" class="w-12 h-12 rounded-full object-cover shadow-sm border-2 border-white">
+                        <div>
+                            <h4 class="font-bold text-secondary text-base"><?= htmlspecialchars($review['username']) ?></h4>
+                            <span class="text-xs text-gray-500 font-medium">Pelanggan Gresda</span>
+                        </div>
                     </div>
                 </div>
+                <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
         </div>
     </div>
 </section>
@@ -237,6 +243,41 @@
 
             scrollRightBtn?.addEventListener('click', () => {
                 container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            });
+        }
+
+        // --- Reviews Auto Scroll Logic ---
+        const reviewContainer = document.getElementById('review-scroll-container');
+        const revLeftBtn = document.getElementById('review-scroll-left');
+        const revRightBtn = document.getElementById('review-scroll-right');
+        
+        if (reviewContainer) {
+            const revScrollAmount = 400 + 24; // Card width + gap approx
+            let revAutoScroll;
+
+            const startRevScroll = () => {
+                revAutoScroll = setInterval(() => {
+                    if (reviewContainer.scrollLeft + reviewContainer.clientWidth >= reviewContainer.scrollWidth - 10) {
+                        reviewContainer.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        reviewContainer.scrollBy({ left: revScrollAmount, behavior: 'smooth' });
+                    }
+                }, 4000);
+            };
+            const stopRevScroll = () => clearInterval(revAutoScroll);
+
+            startRevScroll();
+
+            reviewContainer.addEventListener('mouseenter', stopRevScroll);
+            reviewContainer.addEventListener('mouseleave', startRevScroll);
+            reviewContainer.addEventListener('touchstart', stopRevScroll, {passive: true});
+            reviewContainer.addEventListener('touchend', startRevScroll, {passive: true});
+
+            revLeftBtn?.addEventListener('click', () => {
+                reviewContainer.scrollBy({ left: -revScrollAmount, behavior: 'smooth' });
+            });
+            revRightBtn?.addEventListener('click', () => {
+                reviewContainer.scrollBy({ left: revScrollAmount, behavior: 'smooth' });
             });
         }
 

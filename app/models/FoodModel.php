@@ -33,6 +33,47 @@ class FoodModel extends Database {
         return $this->resultSet();
     }
 
+    public function getFiltered($keyword = '', $categorySlug = 'all', $sort = 'newest') {
+        $sql = "SELECT * FROM tbl_food WHERE active = 'Yes'";
+        
+        // Add category filter if not 'all'
+        if ($categorySlug !== 'all') {
+            $sql .= " AND category = :category";
+        }
+        
+        // Add search keyword filter
+        if (!empty($keyword)) {
+            $sql .= " AND (name LIKE :keyword OR description LIKE :keyword)";
+        }
+        
+        // Add sorting
+        switch ($sort) {
+            case 'price_asc':
+                $sql .= " ORDER BY price ASC";
+                break;
+            case 'price_desc':
+                $sql .= " ORDER BY price DESC";
+                break;
+            case 'newest':
+            default:
+                $sql .= " ORDER BY created_at DESC, food_id DESC";
+                break;
+        }
+
+        $this->query($sql);
+        
+        // Bind parameters safely
+        if ($categorySlug !== 'all') {
+            $this->bind(':category', $categorySlug);
+        }
+        
+        if (!empty($keyword)) {
+            $this->bind(':keyword', '%' . $keyword . '%');
+        }
+
+        return $this->resultSet();
+    }
+
     public function create($data) {
         $food_id = UUID::v4();
         $this->query("INSERT INTO tbl_food (food_id, category, name, price, description, image_name, active) VALUES (:food_id, :category, :name, :price, :description, :image_name, :active)");
