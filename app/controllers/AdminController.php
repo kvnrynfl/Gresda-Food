@@ -15,11 +15,18 @@ class AdminController extends Controller {
     public function dashboard() {
         $categoryModel = $this->model('CategoryModel');
         $foodModel = $this->model('FoodModel');
+        $userModel = $this->model('UserModel');
+        $orderModel = $this->model('OrderModel');
         
+        $active_orders_count = count(array_filter($orderModel->getAllCart(), function($order) {
+            return !in_array($order['status'], ['Finished', 'Canceled', 'Cart']);
+        }));
+
         $data = [
             'total_categories' => count($categoryModel->getAll()),
             'total_foods' => count($foodModel->getAll()),
-            // Further aggregations can be passed here
+            'total_users' => count($userModel->getAll()),
+            'active_orders' => $active_orders_count
         ];
         
         $this->view('admin/dashboard', $data);

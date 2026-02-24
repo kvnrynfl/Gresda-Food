@@ -12,7 +12,7 @@ include '../app/views/layouts/admin_header.php';
         </div>
         <div>
             <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Pengguna</p>
-            <p class="text-3xl font-bold text-gray-800">120</p>
+            <p class="text-3xl font-bold text-gray-800"><?= $total_users ?? 0 ?></p>
         </div>
     </div>
     <!-- Stat Card 2 -->
@@ -42,7 +42,7 @@ include '../app/views/layouts/admin_header.php';
         </div>
         <div>
             <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Pesanan Aktif</p>
-            <p class="text-3xl font-bold text-gray-800">14</p>
+            <p class="text-3xl font-bold text-gray-800"><?= $active_orders ?? 0 ?></p>
         </div>
     </div>
 </div>
