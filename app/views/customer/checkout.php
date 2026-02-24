@@ -22,7 +22,7 @@
                     <div class="grid grid-cols-1 gap-6">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Rekening Pengirim</label>
-                            <input type="text" name="rekening_name" required value="<?= htmlspecialchars($_SESSION['username']) ?>" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="Contoh: Budi Santoso">
+                            <input type="text" name="rekening_name" required value="<?= htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username']) ?>" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="Contoh: Budi Santoso">
                             <span class="text-xs text-gray-500 mt-1 block">Nama pada rekening bank atau dompet digital yang digunakan untuk transfer.</span>
                         </div>
                         <div>
