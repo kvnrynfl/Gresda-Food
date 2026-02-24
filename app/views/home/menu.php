@@ -25,13 +25,12 @@
                 <!-- Search Box -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4">Cari Menu</h3>
-                    <form action="<?= BASEURL ?>/menu<?= $active_category !== 'all' ? '/category/'.urlencode($active_category) : '' ?>" method="GET">
+                    <form id="search-form" action="<?= BASEURL ?>/menu/fetchFoods" method="GET">
                         <div class="relative">
-                            <input type="text" name="q" value="<?= htmlspecialchars($search_keyword ?? '') ?>" placeholder="Cari nama atau deskripsi..." class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition text-sm">
+                            <input type="text" id="search-input" name="q" value="<?= htmlspecialchars($search_keyword ?? '') ?>" placeholder="Cari nama atau deskripsi..." class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition text-sm">
                             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <?php if(!empty($active_sort)): ?>
-                                <input type="hidden" name="sort" value="<?= htmlspecialchars($active_sort) ?>">
-                            <?php endif; ?>
+                            <input type="hidden" id="sort-hidden" name="sort" value="<?= htmlspecialchars($active_sort) ?>">
+                            <input type="hidden" id="category-hidden" name="category" value="<?= htmlspecialchars($active_category) ?>">
                         </div>
                         <button type="submit" class="hidden">Cari</button>
                     </form>
@@ -40,12 +39,12 @@
                 <!-- Categories Vertical -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4">Kategori</h3>
-                    <div class="space-y-2 flex flex-col">
-                        <a href="<?= BASEURL ?>/menu<?= !empty($search_keyword) ? '?q='.urlencode($search_keyword).(!empty($active_sort) ? '&sort='.$active_sort : '') : (!empty($active_sort) ? '?sort='.$active_sort : '') ?>" class="block px-4 py-3 rounded-xl text-sm font-medium transition <?= ($active_category === 'all') ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700' ?>">
+                    <div class="space-y-2 flex flex-col category-list">
+                        <a href="javascript:void(0)" data-category="all" class="category-link block px-4 py-3 rounded-xl text-sm font-medium transition <?= ($active_category === 'all') ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700' ?>">
                             Semua Menu
                         </a>
                         <?php foreach($categories as $cat): ?>
-                            <a href="<?= BASEURL ?>/menu/category/<?= urlencode($cat['category']) ?><?= !empty($search_keyword) ? '?q='.urlencode($search_keyword).(!empty($active_sort) ? '&sort='.$active_sort : '') : (!empty($active_sort) ? '?sort='.$active_sort : '') ?>" class="block px-4 py-3 rounded-xl text-sm font-medium transition <?= ($active_category === $cat['category']) ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700' ?>">
+                            <a href="javascript:void(0)" data-category="<?= htmlspecialchars($cat['category']) ?>" class="category-link block px-4 py-3 rounded-xl text-sm font-medium transition <?= ($active_category === $cat['category']) ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700' ?>">
                                 <?= htmlspecialchars($cat['name']) ?>
                             </a>
                         <?php endforeach; ?>
@@ -58,7 +57,7 @@
                 
                 <!-- Sort Controls & Result Count -->
                 <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 px-2">
-                    <div class="text-gray-600 text-sm font-medium">
+                    <div class="text-gray-600 text-sm font-medium" id="result-count-text">
                         Menampilkan <span class="font-bold text-gray-900"><?= count($foods) ?></span> menu 
                         <?php if(!empty($search_keyword)): ?>
                             untuk pencarian "<span class="italic font-bold text-secondary"><?= htmlspecialchars($search_keyword) ?></span>"
@@ -67,7 +66,7 @@
                     
                     <div class="flex items-center gap-3">
                         <label class="text-sm text-gray-500 font-medium whitespace-nowrap">Urutkan:</label>
-                        <select onchange="updateSort(this.value)" class="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 shadow-sm outline-none cursor-pointer">
+                        <select id="sort-select" class="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 shadow-sm outline-none cursor-pointer">
                             <option value="newest" <?= $active_sort === 'newest' ? 'selected' : '' ?>>Terbaru</option>
                             <option value="price_asc" <?= $active_sort === 'price_asc' ? 'selected' : '' ?>>Harga: Rendah ke Tinggi</option>
                             <option value="price_desc" <?= $active_sort === 'price_desc' ? 'selected' : '' ?>>Harga: Tinggi ke Rendah</option>
@@ -75,67 +74,272 @@
                     </div>
                 </div>
 
-                <!-- Grid -->
-                <?php if(empty($foods)): ?>
-                    <div class="text-center py-20 text-gray-500 bg-white rounded-3xl border border-gray-100 shadow-sm flex-grow flex flex-col items-center justify-center">
-                        <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                            <i class="fas fa-search text-4xl text-gray-300"></i>
+                <!-- Grid Container -->
+                <div id="food-grid-container" class="relative">
+                    <?php if(empty($foods)): ?>
+                        <div class="text-center py-20 text-gray-500 bg-white rounded-3xl border border-gray-100 shadow-sm flex-grow flex flex-col items-center justify-center">
+                            <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-search text-4xl text-gray-300"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-700 mb-2">Menu tidak ditemukan</h3>
+                            <p>Coba gunakan kata kunci lain atau hapus filter kategori.</p>
+                            <button type="button" onclick="resetFilters()" class="mt-6 px-6 py-2.5 bg-primary text-white font-semibold rounded-full hover:bg-cyan-700 transition">Reset Pencarian</button>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-700 mb-2">Menu tidak ditemukan</h3>
-                        <p>Coba gunakan kata kunci lain atau hapus filter kategori.</p>
-                        <a href="<?= BASEURL ?>/menu" class="mt-6 px-6 py-2.5 bg-primary text-white font-semibold rounded-full hover:bg-cyan-700 transition">Reset Pencarian</a>
-                    </div>
-                <?php else: ?>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <?php foreach($foods as $food): ?>
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100/50 hover:shadow-2xl hover:border-cyan-100 transition-all duration-300 flex flex-col overflow-hidden group transform hover:-translate-y-1 cursor-pointer food-card"
-                         data-name="<?= htmlspecialchars($food['name']) ?>"
-                         data-price="Rp <?= number_format($food['price'] ?? 0, 0, ',', '.') ?>"
-                         data-image="<?= BASEURL ?>/images/foods/<?= htmlspecialchars($food['image_name']) ?>"
-                         data-description="<?= htmlspecialchars($food['description']) ?>">
-                        <div class="relative h-64 overflow-hidden bg-gray-100">
-                            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent group-hover:from-gray-900/60 transition-all z-10"></div>
-                            <img src="<?= BASEURL ?>/images/foods/<?= htmlspecialchars($food['image_name']) ?>" alt="<?= htmlspecialchars($food['name']) ?>" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 ease-in-out" onerror="this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'">
-                            <div class="absolute bottom-4 left-4 z-20">
-                                <span class="bg-white text-secondary font-black px-4 py-1.5 rounded-full shadow-lg text-lg ring-4 ring-white/30 truncate block max-w-full">
-                                    Rp <?= number_format($food['price'] ?? 0, 0, ',', '.') ?>
-                                </span>
+                    <?php else: ?>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <?php foreach($foods as $food): ?>
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100/50 hover:shadow-2xl hover:border-cyan-100 transition-all duration-300 flex flex-col overflow-hidden group transform hover:-translate-y-1 cursor-pointer food-card"
+                             data-name="<?= htmlspecialchars($food['name']) ?>"
+                             data-price="Rp <?= number_format($food['price'] ?? 0, 0, ',', '.') ?>"
+                             data-image="<?= BASEURL ?>/images/foods/<?= htmlspecialchars($food['image_name']) ?>"
+                             data-description="<?= htmlspecialchars($food['description']) ?>">
+                            <div class="relative h-64 overflow-hidden bg-gray-100">
+                                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent group-hover:from-gray-900/60 transition-all z-10"></div>
+                                <img src="<?= BASEURL ?>/images/foods/<?= htmlspecialchars($food['image_name']) ?>" alt="<?= htmlspecialchars($food['name']) ?>" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 ease-in-out" onerror="this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'">
+                                <div class="absolute bottom-4 left-4 z-20">
+                                    <span class="bg-white text-secondary font-black px-4 py-1.5 rounded-full shadow-lg text-lg ring-4 ring-white/30 truncate block max-w-full">
+                                        Rp <?= number_format($food['price'] ?? 0, 0, ',', '.') ?>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-6 flex-grow flex flex-col relative bg-white">
+                                <div class="mb-4 flex-grow">
+                                    <h4 class="text-xl font-bold text-gray-800 leading-tight group-hover:text-cyan-700 transition-colors line-clamp-2"><?= htmlspecialchars($food['name']) ?></h4>
+                                </div>
+                                <div class="mt-auto pt-4 border-t border-gray-50">
+                                    <form class="add-to-cart-form">
+                                        <input type="hidden" name="food_id" value="<?= $food['food_id'] ?>">
+                                        <input type="hidden" name="qty" value="1">
+                                        <button type="submit" class="add-to-cart-btn w-full py-2.5 bg-gray-50 border border-gray-200 text-secondary font-semibold text-sm rounded-xl hover:bg-primary hover:border-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn relative overflow-hidden">
+                                            <span class="relative z-10 flex items-center gap-2 btn-text"><i class="fas fa-cart-plus text-base"></i> Tambah Keranjang</span>
+                                            <div class="absolute inset-0 h-full w-0 bg-primary transition-all duration-300 ease-out group-hover/btn:w-full z-0"></div>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                        <div class="p-6 flex-grow flex flex-col relative bg-white">
-                            <div class="mb-4 flex-grow">
-                                <h4 class="text-xl font-bold text-gray-800 leading-tight group-hover:text-cyan-700 transition-colors line-clamp-2"><?= htmlspecialchars($food['name']) ?></h4>
-                                <!-- Deskripsi disembunyikan sesuai permintaan, ditampilkan di popup -->
-                            </div>
-                            <div class="mt-auto pt-4 border-t border-gray-50">
-                                <form action="<?= BASEURL ?>/customer/addToCart" method="POST">
-                                    <input type="hidden" name="food_id" value="<?= $food['food_id'] ?>">
-                                    <input type="hidden" name="qty" value="1">
-                                    <button type="submit" class="w-full py-2.5 bg-gray-50 border border-gray-200 text-secondary font-semibold text-sm rounded-xl hover:bg-primary hover:border-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn relative overflow-hidden">
-                                        <span class="relative z-10 flex items-center gap-2"><i class="fas fa-cart-plus text-base"></i> Tambah Keranjang</span>
-                                        <div class="absolute inset-0 h-full w-0 bg-primary transition-all duration-300 ease-out group-hover/btn:w-full z-0"></div>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+                </div>
             </div>
-        <?php endif; ?>
+        </div>
     </div>
 </section>
 
 <script>
-    function updateSort(val) {
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('sort', val);
-        window.location.search = urlParams.toString();
+    const baseUrl = '<?= BASEURL ?>';
+    let isFetching = false;
+
+    // --- State Variables ---
+    let currentCategory = document.getElementById('category-hidden').value || 'all';
+    let currentSort = document.getElementById('sort-select').value || 'newest';
+    let currentQuery = document.getElementById('search-input').value || '';
+
+    // --- DOM Elements ---
+    const searchForm = document.getElementById('search-form');
+    const searchInput = document.getElementById('search-input');
+    const sortSelect = document.getElementById('sort-select');
+    const categoryLinks = document.querySelectorAll('.category-link');
+    const gridContainer = document.getElementById('food-grid-container');
+    const resultCountText = document.getElementById('result-count-text');
+
+    // --- Event Listeners ---
+    
+    // 1. Search Form Submit
+    searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        currentQuery = searchInput.value.trim();
+        updateMenuURL();
+        fetchMenuData();
+    });
+
+    // Handle typing delay for search (debounce)
+    let typingTimer;
+    searchInput.addEventListener('input', () => {
+        clearTimeout(typingTimer);
+        currentQuery = searchInput.value;
+        typingTimer = setTimeout(() => {
+            updateMenuURL();
+            fetchMenuData();
+        }, 500); // 500ms debounce
+    });
+
+    // 2. Sort Select Change
+    sortSelect.addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        document.getElementById('sort-hidden').value = currentSort;
+        updateMenuURL();
+        fetchMenuData();
+    });
+
+    // 3. Category Click
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const cat = link.getAttribute('data-category');
+            if(currentCategory === cat) return; // ignore if same
+            
+            // Update active styling
+            categoryLinks.forEach(l => {
+                l.className = 'category-link block px-4 py-3 rounded-xl text-sm font-medium transition text-gray-600 hover:bg-cyan-50 hover:text-cyan-700';
+            });
+            link.className = 'category-link block px-4 py-3 rounded-xl text-sm font-medium transition bg-primary text-white shadow-md';
+            
+            currentCategory = cat;
+            document.getElementById('category-hidden').value = currentCategory;
+            
+            // Optionally clear search when changing category for better UX
+            // currentQuery = '';
+            // searchInput.value = '';
+
+            updateMenuURL();
+            fetchMenuData();
+        });
+    });
+
+    // URL Update without refresh
+    function updateMenuURL() {
+        const url = new URL(baseUrl + '/menu' + (currentCategory !== 'all' ? '/category/' + currentCategory : ''));
+        if (currentQuery) url.searchParams.set('q', currentQuery);
+        if (currentSort && currentSort !== 'newest') url.searchParams.set('sort', currentSort);
+        window.history.pushState({}, '', url);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // Reset Filters Function
+    window.resetFilters = function() {
+        currentQuery = '';
+        searchInput.value = '';
+        currentCategory = 'all';
+        currentSort = 'newest';
+        sortSelect.value = 'newest';
+        
+        categoryLinks.forEach(l => {
+             l.className = 'category-link block px-4 py-3 rounded-xl text-sm font-medium transition text-gray-600 hover:bg-cyan-50 hover:text-cyan-700';
+             if(l.getAttribute('data-category') === 'all') {
+                 l.className = 'category-link block px-4 py-3 rounded-xl text-sm font-medium transition bg-primary text-white shadow-md';
+             }
+        });
+        
+        updateMenuURL();
+        fetchMenuData();
+    };
+
+
+    // --- Core Fetch Logic ---
+    function fetchMenuData() {
+        if(isFetching) return;
+        isFetching = true;
+
+        // Show loading state
+        gridContainer.classList.add('opacity-50', 'pointer-events-none', 'scale-[0.98]', 'transition-all', 'duration-300');
+        
+        // Show loading Toast
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true
+        });
+        Toast.fire({
+            icon: 'info',
+            title: 'Menerapkan filter...'
+        });
+
+        const params = new URLSearchParams({
+            q: currentQuery,
+            sort: currentSort,
+            category: currentCategory
+        });
+
+        fetch(`${baseUrl}/menu/fetchFoods?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                renderFoods(data);
+            })
+            .catch(error => {
+                console.error("Failed to fetch menu:", error);
+                Swal.fire({icon: 'error', title: 'Oops', text: 'Gagal mengambil data menu'});
+            })
+            .finally(() => {
+                isFetching = false;
+                gridContainer.classList.remove('opacity-50', 'pointer-events-none', 'scale-[0.98]');
+            });
+    }
+
+    // --- Render Logic ---
+    function renderFoods(data) {
+        // Update Count Text
+        let countHtml = `Menampilkan <span class="font-bold text-gray-900">${data.count}</span> menu`;
+        if (currentQuery) {
+            countHtml += ` untuk pencarian "<span class="italic font-bold text-secondary">${escapeHtml(currentQuery)}</span>"`;
+        }
+        resultCountText.innerHTML = countHtml;
+
+        if (data.count === 0) {
+            gridContainer.innerHTML = `
+                <div class="text-center py-20 text-gray-500 bg-white rounded-3xl border border-gray-100 shadow-sm flex-grow flex flex-col items-center justify-center animate-fade-in-up">
+                    <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-search text-4xl text-gray-300"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-700 mb-2">Menu tidak ditemukan</h3>
+                    <p>Coba gunakan kata kunci lain atau hapus filter kategori.</p>
+                    <button type="button" onclick="resetFilters()" class="mt-6 px-6 py-2.5 bg-primary text-white font-semibold rounded-full hover:bg-cyan-700 transition">Reset Pencarian</button>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">';
+        data.foods.forEach((food, index) => {
+            const priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(food.price);
+            html += `
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100/50 hover:shadow-2xl hover:border-cyan-100 transition-all duration-300 flex flex-col overflow-hidden group transform hover:-translate-y-1 cursor-pointer food-card food-item-anim"
+                     style="animation-delay: ${index * 50}ms;"
+                     data-name="${escapeHtml(food.name)}"
+                     data-price="${priceFormatted}"
+                     data-image="${data.baseurl}/images/foods/${escapeHtml(food.image_name)}"
+                     data-description="${escapeHtml(food.description)}">
+                    <div class="relative h-64 overflow-hidden bg-gray-100">
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent group-hover:from-gray-900/60 transition-all z-10"></div>
+                        <img src="${data.baseurl}/images/foods/${escapeHtml(food.image_name)}" alt="${escapeHtml(food.name)}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 ease-in-out" onerror="this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'">
+                        <div class="absolute bottom-4 left-4 z-20">
+                            <span class="bg-white text-secondary font-black px-4 py-1.5 rounded-full shadow-lg text-lg ring-4 ring-white/30 truncate block max-w-full">
+                                ${priceFormatted}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col relative bg-white">
+                        <div class="mb-4 flex-grow">
+                            <h4 class="text-xl font-bold text-gray-800 leading-tight group-hover:text-cyan-700 transition-colors line-clamp-2">${escapeHtml(food.name)}</h4>
+                        </div>
+                        <div class="mt-auto pt-4 border-t border-gray-50">
+                            <form class="add-to-cart-form">
+                                <input type="hidden" name="food_id" value="${food.food_id}">
+                                <input type="hidden" name="qty" value="1">
+                                <button type="submit" class="add-to-cart-btn w-full py-2.5 bg-gray-50 border border-gray-200 text-secondary font-semibold text-sm rounded-xl hover:bg-primary hover:border-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn relative overflow-hidden">
+                                    <span class="relative z-10 flex items-center gap-2 btn-text"><i class="fas fa-cart-plus text-base"></i> Tambah Keranjang</span>
+                                    <div class="absolute inset-0 h-full w-0 bg-primary transition-all duration-300 ease-out group-hover/btn:w-full z-0"></div>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        gridContainer.innerHTML = html;
+        
+        // Re-attach event listeners to new cards
+        attachCardListeners();
+    }
+
+    // --- Detail Popup and Add to Cart Logic ---
+    function attachCardListeners() {
+        // Detailed Popup
         document.querySelectorAll('.food-card').forEach(card => {
             card.addEventListener('click', (e) => {
-                // Ignore clicks on Add To Cart button
                 if (e.target.closest('form')) return;
 
                 const name = card.getAttribute('data-name');
@@ -163,6 +367,109 @@
                 });
             });
         });
+
+        // Add to Cart AJAX
+        document.querySelectorAll('.add-to-cart-form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                <?php if(!isset($_SESSION['user_id'])): ?>
+                    window.location.href = baseUrl + '/auth/login';
+                    return;
+                <?php endif; ?>
+
+                const formData = new FormData(form);
+                const btn = form.querySelector('.add-to-cart-btn');
+                const btnText = form.querySelector('.btn-text');
+                
+                // Loading state
+                const originalText = btnText.innerHTML;
+                btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menambahkan...';
+                btn.classList.add('opacity-75', 'cursor-not-allowed');
+                btn.disabled = true;
+
+                fetch(`${baseUrl}/customer/addToCart`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    // if response is a redirect (e.g. not logged in), fetch handles it transparently but the url changes
+                    if(response.redirected) {
+                        window.location.href = response.url;
+                        return null;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if(!data) return;
+                    if(data.status === 'success') {
+                        // Toast Notification
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        Toast.fire({
+                            icon: 'success',
+                            title: data.message
+                        });
+
+                        // Update badges
+                        const badge = document.getElementById('nav-cart-badge');
+                        const mobileBadge = document.getElementById('mobile-nav-cart-badge');
+                        
+                        if(badge) {
+                            badge.textContent = data.cart_count;
+                        } else {
+                            // Badge doesn't exist yet, we could reload or manually inject it into the DOM,
+                            // but since the wrapper is complex, relying on the badge existing (even if hidden) is easier.
+                            // If it doesn't exist we force a reload just in case, or we fetch the generic navbar.
+                            // For Gresda Food, we modified navbar.php to always render it if >0, we can just reload if it is exactly 0 to 1 transition.
+                            if(data.cart_count === 1) {
+                                window.location.reload(); 
+                            }
+                        }
+                        
+                        if(mobileBadge) {
+                            mobileBadge.textContent = data.cart_count;
+                        }
+
+                    } else {
+                        Swal.fire('Oops', data.message || 'Terjadi kesalahan', 'error');
+                    }
+                })
+                .catch(err => console.error("Error adding to cart:", err))
+                .finally(() => {
+                    btnText.innerHTML = originalText;
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    btn.disabled = false;
+                });
+            });
+        });
+    }
+
+    // Helper to escape HTML to prevent XSS in JS template literals
+    function escapeHtml(unsafe) {
+        if(!unsafe) return '';
+        return unsafe.toString()
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Initialize listners on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        attachCardListeners();
     });
 </script>
 
@@ -176,6 +483,22 @@
         scrollbar-width: none;
     }
     .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Custom Animation for Food Cards Entrance */
+    @keyframes fadeInUpStagger {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .food-item-anim {
+        animation: fadeInUpStagger 0.6s ease-out forwards;
+        opacity: 0; /* starts transparent */
+    }
 </style>
 
 <?php include '../app/views/layouts/footer.php'; ?>

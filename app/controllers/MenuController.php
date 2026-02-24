@@ -38,4 +38,25 @@ class MenuController extends Controller {
 
         $this->view('home/menu', $data);
     }
+
+    public function fetchFoods() {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            $foodModel = $this->model('FoodModel');
+            
+            $keyword = isset($_GET['q']) ? trim($_GET['q']) : '';
+            $categorySlug = isset($_GET['category']) ? $_GET['category'] : 'all';
+            $sort = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
+            
+            $foods = $foodModel->getFiltered($keyword, $categorySlug, $sort);
+            
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'success',
+                'foods' => $foods,
+                'count' => count($foods),
+                'baseurl' => BASEURL
+            ]);
+            exit;
+        }
+    }
 }

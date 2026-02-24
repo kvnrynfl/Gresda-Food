@@ -34,8 +34,20 @@ class CustomerController extends Controller {
             
             $orderModel->addToCart($_SESSION['user_id'], $foodId, 1);
             
-            $_SESSION['flash_success'] = "Berhasil masuk keranjang!";
-            $this->redirect('/menu');
+            // Check if request is AJAX
+            if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                $cartItems = $orderModel->getCartItemsByUser($_SESSION['user_id']);
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Berhasil masuk keranjang!',
+                    'cart_count' => count($cartItems)
+                ]);
+                exit;
+            } else {
+                $_SESSION['flash_success'] = "Berhasil masuk keranjang!";
+                $this->redirect('/menu');
+            }
         }
     }
 

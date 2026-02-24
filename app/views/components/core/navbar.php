@@ -45,7 +45,7 @@
                     <a href="<?= BASEURL ?>/customer/cart" class="relative nav-link transition <?php echo (isset($title) && $title === 'Home') ? 'text-white hover:text-gray-200' : 'text-gray-600 hover:text-primary'; ?>">
                         <i class="fas fa-shopping-cart text-xl"></i>
                         <?php if($globalCartCount > 0): ?>
-                            <span class="absolute -top-2 -right-3 bg-primary text-white text-xs px-2 py-0.5 rounded-full"><?= $globalCartCount ?></span>
+                            <span id="nav-cart-badge" class="absolute -top-2 -right-3 bg-primary text-white text-xs px-2 py-0.5 rounded-full"><?= $globalCartCount ?></span>
                         <?php endif; ?>
                     </a>
                     <?php endif; ?>
@@ -112,7 +112,7 @@
             <?php if(isset($_SESSION['role'])): ?>
                 <?php if($_SESSION['role'] === 'customer'): ?>
                 <a href="<?= BASEURL ?>/customer/cart" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
-                    <i class="fas fa-shopping-cart w-5 mr-1 text-center"></i> Keranjang (<span class="text-primary"><?= $globalCartCount ?? 0 ?></span>)
+                    <i class="fas fa-shopping-cart w-5 mr-1 text-center"></i> Keranjang (<span id="mobile-nav-cart-badge" class="text-primary"><?= $globalCartCount ?? 0 ?></span>)
                 </a>
                 <a href="<?= BASEURL ?>/customer/profile" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-cyan-50 border-b border-gray-50">
                     <i class="fas fa-user-circle w-5 mr-1 text-center"></i> Profil Saya
