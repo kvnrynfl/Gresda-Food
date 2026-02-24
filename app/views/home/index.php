@@ -93,7 +93,7 @@
                 <i class="fas fa-chevron-right"></i>
             </button>
 
-            <div id="menu-scroll-container" class="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory hide-scrollbar scroll-smooth">
+            <div id="menu-scroll-container" class="flex overflow-x-auto gap-6 pb-8 hide-scrollbar">
                 <?php if (isset($data['topFoods']) && count($data['topFoods']) > 0): ?>
                     <?php foreach ($data['topFoods'] as $food): ?>
                         <div class="min-w-[300px] sm:min-w-[350px] w-[300px] sm:w-[350px] flex-shrink-0 snap-start bg-white rounded-2xl shadow-sm hover:shadow-xl transition flex flex-col overflow-hidden group">
@@ -147,7 +147,7 @@
                 <i class="fas fa-chevron-right"></i>
             </button>
 
-            <div id="review-scroll-container" class="flex overflow-x-auto gap-6 pb-8 pt-4 px-4 snap-x snap-mandatory hide-scrollbar scroll-smooth">
+            <div id="review-scroll-container" class="flex overflow-x-auto gap-6 pb-8 pt-4 px-4 hide-scrollbar">
                 <?php foreach ($data['reviews'] as $review): ?>
                 <div class="min-w-[300px] md:min-w-[400px] w-[300px] md:w-[400px] flex-shrink-0 snap-center bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl transition flex flex-col">
                     <div class="flex items-center gap-1 mb-4 text-yellow-500">
@@ -208,35 +208,34 @@
         const scrollRightBtn = document.getElementById('scroll-right');
         
         if (container) {
-            const scrollAmount = 350 + 24; // Card width + gap approx
-            let autoScrollInterval;
+            let isHovered = false;
+            let scrollSpeed = 1; // pixels per frame
 
-            const startAutoScroll = () => {
-                autoScrollInterval = setInterval(() => {
-                    if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
-                        container.scrollTo({ left: 0, behavior: 'smooth' });
+            const autoScroll = () => {
+                if (!isHovered) {
+                    if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 1) {
+                        container.scrollLeft = 0;
                     } else {
-                        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                        container.scrollLeft += scrollSpeed;
                     }
-                }, 3000);
+                }
+                requestAnimationFrame(autoScroll);
             };
 
-            const stopAutoScroll = () => clearInterval(autoScrollInterval);
-
-            startAutoScroll();
+            requestAnimationFrame(autoScroll);
 
             // Pause auto scroll on hover/interaction
-            container.addEventListener('mouseenter', stopAutoScroll);
-            container.addEventListener('mouseleave', startAutoScroll);
-            container.addEventListener('touchstart', stopAutoScroll, {passive: true});
-            container.addEventListener('touchend', startAutoScroll, {passive: true});
+            container.addEventListener('mouseenter', () => isHovered = true);
+            container.addEventListener('mouseleave', () => isHovered = false);
+            container.addEventListener('touchstart', () => isHovered = true, {passive: true});
+            container.addEventListener('touchend', () => isHovered = false, {passive: true});
 
-            scrollLeftBtn?.addEventListener('mouseenter', stopAutoScroll);
-            scrollLeftBtn?.addEventListener('mouseleave', startAutoScroll);
-            scrollRightBtn?.addEventListener('mouseenter', stopAutoScroll);
-            scrollRightBtn?.addEventListener('mouseleave', startAutoScroll);
+            const scrollAmount = 350 + 24; // Card width + gap approx
+            scrollLeftBtn?.addEventListener('mouseenter', () => isHovered = true);
+            scrollLeftBtn?.addEventListener('mouseleave', () => isHovered = false);
+            scrollRightBtn?.addEventListener('mouseenter', () => isHovered = true);
+            scrollRightBtn?.addEventListener('mouseleave', () => isHovered = false);
 
-            // Button clicks
             scrollLeftBtn?.addEventListener('click', () => {
                 container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
             });
@@ -252,26 +251,32 @@
         const revRightBtn = document.getElementById('review-scroll-right');
         
         if (reviewContainer) {
-            const revScrollAmount = 400 + 24; // Card width + gap approx
-            let revAutoScroll;
+            let revIsHovered = false;
+            let revScrollSpeed = 1;
 
-            const startRevScroll = () => {
-                revAutoScroll = setInterval(() => {
-                    if (reviewContainer.scrollLeft + reviewContainer.clientWidth >= reviewContainer.scrollWidth - 10) {
-                        reviewContainer.scrollTo({ left: 0, behavior: 'smooth' });
+            const revAutoScroll = () => {
+                if (!revIsHovered) {
+                    if (reviewContainer.scrollLeft + reviewContainer.clientWidth >= reviewContainer.scrollWidth - 1) {
+                        reviewContainer.scrollLeft = 0;
                     } else {
-                        reviewContainer.scrollBy({ left: revScrollAmount, behavior: 'smooth' });
+                        reviewContainer.scrollLeft += revScrollSpeed;
                     }
-                }, 4000);
+                }
+                requestAnimationFrame(revAutoScroll);
             };
-            const stopRevScroll = () => clearInterval(revAutoScroll);
 
-            startRevScroll();
+            requestAnimationFrame(revAutoScroll);
 
-            reviewContainer.addEventListener('mouseenter', stopRevScroll);
-            reviewContainer.addEventListener('mouseleave', startRevScroll);
-            reviewContainer.addEventListener('touchstart', stopRevScroll, {passive: true});
-            reviewContainer.addEventListener('touchend', startRevScroll, {passive: true});
+            reviewContainer.addEventListener('mouseenter', () => revIsHovered = true);
+            reviewContainer.addEventListener('mouseleave', () => revIsHovered = false);
+            reviewContainer.addEventListener('touchstart', () => revIsHovered = true, {passive: true});
+            reviewContainer.addEventListener('touchend', () => revIsHovered = false, {passive: true});
+
+            const revScrollAmount = 400 + 24; // Card width + gap approx
+            revLeftBtn?.addEventListener('mouseenter', () => revIsHovered = true);
+            revLeftBtn?.addEventListener('mouseleave', () => revIsHovered = false);
+            revRightBtn?.addEventListener('mouseenter', () => revIsHovered = true);
+            revRightBtn?.addEventListener('mouseleave', () => revIsHovered = false);
 
             revLeftBtn?.addEventListener('click', () => {
                 reviewContainer.scrollBy({ left: -revScrollAmount, behavior: 'smooth' });

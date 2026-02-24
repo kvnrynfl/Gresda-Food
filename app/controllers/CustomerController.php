@@ -201,12 +201,13 @@ class CustomerController extends Controller {
     public function orderDetails($id) {
         $orderModel = $this->model('OrderModel');
         
-        // Security check: Verify order belongs to this user
         $userOrders = $orderModel->getOrdersByUser($_SESSION['user_id']);
         $isOwner = false;
+        $activeOrder = null;
         foreach($userOrders as $order) {
             if($order['order_id'] == $id) {
                 $isOwner = true;
+                $activeOrder = $order;
                 break;
             }
         }
@@ -216,6 +217,7 @@ class CustomerController extends Controller {
             return;
         }
 
+        $data['order'] = $activeOrder;
         $data['details'] = $orderModel->getOrderDetails($id);
         $data['order_id'] = $id;
         $this->view('customer/order_details', $data);

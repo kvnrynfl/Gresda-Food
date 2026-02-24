@@ -13,75 +13,75 @@ include '../app/views/layouts/header.php';
             <h1 class="text-3xl font-bold text-gray-900">Riwayat Pesanan</h1>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[800px]">
-                    <thead>
-                        <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider font-semibold border-b border-gray-200">
-                            <th class="px-6 py-4">ID Pesanan</th>
-                            <th class="px-6 py-4">Tanggal</th>
-                            <th class="px-6 py-4">Total</th>
-                            <th class="px-6 py-4 text-center">Status</th>
-                            <th class="px-6 py-4 text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        <?php if(!empty($orders)): foreach($orders as $order): ?>
-                            <tr class="hover:bg-gray-50 transition group">
-                                <td class="px-6 py-4 font-mono font-bold text-gray-800">#<?= htmlspecialchars($order['order_id']) ?></td>
-                                <td class="px-6 py-4 text-sm text-gray-600">
-                                    <div class="flex items-center gap-2">
-                                        <?= date('d M Y - H:i', strtotime($order['created_at'])) ?>
-                                    </div>
-                                </td>
-                                    Rp <?= number_format($order['total'] ?? 0, 0, ',', '.') ?>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <?php 
-                                        $statusClass = 'bg-gray-100 text-gray-600';
-                                        $statusMap = [
-                                            'Cart' => 'Keranjang',
-                                            'Payment' => 'Pembayaran',
-                                            'Confirmed' => 'Dikonfirmasi',
-                                            'Delivery' => 'Dikirim',
-                                            'Finished' => 'Selesai',
-                                            'Canceled' => 'Dibatalkan'
-                                        ];
-                                        switch($order['status']) {
-                                            case 'Cart': $statusClass = 'bg-gray-100 text-gray-600'; break;
-                                            case 'Payment': $statusClass = 'bg-blue-100 text-blue-700'; break;
-                                            case 'Confirmed': $statusClass = 'bg-indigo-100 text-indigo-700'; break;
-                                            case 'Delivery': $statusClass = 'bg-orange-100 text-orange-700'; break;
-                                            case 'Finished': $statusClass = 'bg-green-100 text-green-700'; break;
-                                            case 'Canceled': $statusClass = 'bg-cyan-100 text-cyan-700'; break;
-                                        }
-                                        $statusText = $statusMap[$order['status']] ?? $order['status'];
-                                    ?>
-                                    <span class="inline-flex items-center <?= $statusClass ?> px-3 py-1 rounded-full font-bold text-xs">
-                                        <?= htmlspecialchars($statusText) ?>
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <a href="<?= BASEURL ?>/customer/orderDetails/<?= urlencode($order['order_id']) ?>" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-bold shadow-sm transition">
-                                        Lihat Detail
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; else: ?>
-                            <tr>
-                                <td colspan="5" class="px-6 py-16 text-center text-gray-400">
-                                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
-                                        <i class="fas fa-shopping-bag text-3xl text-gray-300"></i>
-                                    </div>
-                                    <h3 class="text-xl font-bold text-gray-600 mb-1">Belum Ada Pesanan</h3>
-                                    <p class="text-sm">Anda belum melakukan pesanan apa pun. Mulai jelajahi menu kami!</p>
-                                    <a href="<?= BASEURL ?>/menu" class="mt-4 inline-block px-6 py-2 bg-cyan-600 text-white rounded-lg font-bold shadow-sm hover:bg-cyan-700 transition">Telusuri Menu</a>
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+        <div class="space-y-6">
+            <?php if(!empty($orders)): foreach($orders as $order): ?>
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 hover:shadow-lg transition-all duration-300 group">
+                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 pb-6 border-b border-gray-50">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 rounded-full bg-cyan-50 flex items-center justify-center text-primary">
+                                    <i class="fas fa-receipt"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 font-medium">ID Pesanan</p>
+                                    <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">#<?= htmlspecialchars($order['order_id']) ?></h3>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 flex items-center gap-2 mt-4 md:mt-0">
+                                <i class="far fa-clock"></i> <?= date('d M Y - H:i', strtotime($order['created_at'])) ?>
+                            </p>
+                        </div>
+                        <div class="flex items-center">
+                            <?php 
+                                $statusClass = 'bg-gray-100 text-gray-600 border-gray-200';
+                                $statusIcon = 'fa-clock';
+                                $statusMap = [
+                                    'Cart' => 'Keranjang',
+                                    'Payment' => 'Menunggu Pembayaran',
+                                    'Confirmed' => 'Dikonfirmasi',
+                                    'Delivery' => 'Sedang Dikirim',
+                                    'Finished' => 'Selesai',
+                                    'Canceled' => 'Dibatalkan'
+                                ];
+                                switch($order['status']) {
+                                    case 'Cart': $statusClass = 'bg-gray-100 text-gray-600 border-gray-200'; $statusIcon = 'fa-shopping-cart'; break;
+                                    case 'Payment': $statusClass = 'bg-blue-50 text-blue-700 border-blue-200'; $statusIcon = 'fa-wallet'; break;
+                                    case 'Confirmed': $statusClass = 'bg-indigo-50 text-indigo-700 border-indigo-200'; $statusIcon = 'fa-check-circle'; break;
+                                    case 'Delivery': $statusClass = 'bg-orange-50 text-orange-700 border-orange-200'; $statusIcon = 'fa-motorcycle'; break;
+                                    case 'Finished': $statusClass = 'bg-green-50 text-green-700 border-green-200'; $statusIcon = 'fa-flag-checkered'; break;
+                                    case 'Canceled': $statusClass = 'bg-red-50 text-red-700 border-red-200'; $statusIcon = 'fa-times-circle'; break;
+                                }
+                                $statusText = $statusMap[$order['status']] ?? $order['status'];
+                            ?>
+                            <span class="inline-flex items-center gap-2 <?= $statusClass ?> px-4 py-2 rounded-full font-bold text-sm border shadow-sm">
+                                <i class="fas <?= $statusIcon ?>"></i> <?= htmlspecialchars($statusText) ?>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div class="w-full md:w-auto text-left">
+                            <p class="text-sm text-gray-500 font-medium mb-1">Total Pembayaran</p>
+                            <p class="text-3xl font-black text-gray-800">Rp <?= number_format($order['total'] ?? 0, 0, ',', '.') ?></p>
+                        </div>
+                        
+                        <a href="<?= BASEURL ?>/customer/orderDetails/<?= urlencode($order['order_id']) ?>" class="w-full md:w-auto px-8 py-3.5 bg-white border-2 border-primary text-primary text-sm font-bold rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm hover:shadow active:scale-95 flex items-center justify-center gap-2">
+                            Lihat Detail Pesanan <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            <?php endforeach; else: ?>
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 text-center">
+                    <div class="w-28 h-28 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 border-8 border-white shadow-sm">
+                        <i class="fas fa-shopping-bag text-5xl text-gray-300"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Belum Ada Riwayat Pesanan</h3>
+                    <p class="text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">Tampaknya Anda belum melakukan pesanan apa pun. Mari jelajahi menu lezat kami dan buat pesanan pertama Anda hari ini!</p>
+                    <a href="<?= BASEURL ?>/menu" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-white rounded-full font-bold text-lg hover:bg-cyan-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
+                        <i class="fas fa-utensils"></i> Ayo Mulai Memesan
+                    </a>
+                </div>
+            <?php endif; ?>
         </div>
 
     </div>

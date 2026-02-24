@@ -10,15 +10,59 @@
             <h1 class="text-3xl font-bold text-gray-900">Detail Pesanan</h1>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div class="bg-primary/10 border-b border-primary/20 px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-6 group">
+            <div class="bg-gradient-to-r from-cyan-50 to-white border-b border-gray-100 px-8 py-8 flex flex-col sm:flex-row justify-between sm:items-center gap-6">
                 <div>
-                    <p class="text-sm font-semibold text-primary uppercase tracking-wider mb-1">ID Pesanan</p>
-                    <h2 class="text-2xl font-bold text-gray-900 font-mono">#<?= htmlspecialchars($order_id) ?></h2>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-12 h-12 bg-white rounded-full shadow-sm border border-gray-100 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                            <i class="fas fa-receipt text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5">ID Pesanan</p>
+                            <h2 class="text-2xl font-black text-gray-900 font-mono tracking-tight leading-none">#<?= htmlspecialchars($order_id) ?></h2>
+                        </div>
+                    </div>
+                    <?php if(isset($order)): ?>
+                    <p class="text-sm text-gray-500 font-medium ml-15 mt-2 flex items-center gap-2">
+                        <i class="far fa-calendar-alt text-primary/70"></i> <?= date('d F Y, H:i', strtotime($order['created_at'])) ?>
+                    </p>
+                    <?php endif; ?>
                 </div>
-                <!-- Adding generic order date for user context, utilizing the first detail item timestamp or just display text -->
-                <div class="text-sm font-bold text-gray-600 bg-white px-4 py-2 rounded-lg shadow-sm">
-                    <i class="far fa-clock text-primary mr-1"></i> Riwayat Pesanan Anda
+                
+                <div>
+                    <?php if(isset($order)): ?>
+                        <?php 
+                            $statusClass = 'bg-gray-100 text-gray-600 border-gray-200';
+                            $statusIcon = 'fa-clock';
+                            $statusMap = [
+                                'Cart' => 'Keranjang',
+                                'Payment' => 'Menunggu Pembayaran',
+                                'Confirmed' => 'Dikonfirmasi',
+                                'Delivery' => 'Sedang Dikirim',
+                                'Finished' => 'Pesanan Selesai',
+                                'Canceled' => 'Dibatalkan'
+                            ];
+                            switch($order['status']) {
+                                case 'Cart': $statusClass = 'bg-gray-100 text-gray-600 border-gray-200'; $statusIcon = 'fa-shopping-cart'; break;
+                                case 'Payment': $statusClass = 'bg-blue-50 text-blue-700 border-blue-200'; $statusIcon = 'fa-wallet'; break;
+                                case 'Confirmed': $statusClass = 'bg-indigo-50 text-indigo-700 border-indigo-200'; $statusIcon = 'fa-check-circle'; break;
+                                case 'Delivery': $statusClass = 'bg-orange-50 text-orange-700 border-orange-200'; $statusIcon = 'fa-motorcycle'; break;
+                                case 'Finished': $statusClass = 'bg-green-50 text-green-700 border-green-200'; $statusIcon = 'fa-flag-checkered'; break;
+                                case 'Canceled': $statusClass = 'bg-red-50 text-red-700 border-red-200'; $statusIcon = 'fa-times-circle'; break;
+                            }
+                            $statusText = $statusMap[$order['status']] ?? $order['status'];
+                        ?>
+                        <div class="flex flex-col items-start sm:items-end gap-2">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Status Pesanan</span>
+                            <span class="inline-flex items-center gap-2 <?= $statusClass ?> px-5 py-2.5 rounded-full font-bold text-sm border shadow-sm">
+                                <i class="fas <?= $statusIcon ?>"></i> <?= htmlspecialchars($statusText) ?>
+                            </span>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-sm font-bold text-gray-600 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100">
+                            <i class="far fa-clock text-primary mr-1"></i> Riwayat Pesanan Anda
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
             
