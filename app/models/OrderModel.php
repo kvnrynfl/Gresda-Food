@@ -7,12 +7,12 @@ class OrderModel extends Database {
     }
 
     public function getAllCart() {
-        $this->query("SELECT * FROM tbl_cart ORDER BY cart_id DESC");
+        $this->query("SELECT c.*, u.username, u.email FROM tbl_cart c LEFT JOIN tbl_users u ON c.user_id = u.id ORDER BY c.cart_id DESC");
         return $this->resultSet();
     }
 
     public function getOrdersByUser($user_id) {
-        $this->query("SELECT * FROM tbl_cart WHERE user_id = :user_id ORDER BY cart_id DESC");
+        $this->query("SELECT * FROM tbl_cart WHERE user_id = :user_id AND status != 'Cart' ORDER BY cart_id DESC");
         $this->bind(':user_id', $user_id);
         return $this->resultSet();
     }

@@ -51,7 +51,7 @@ include '../app/views/layouts/header.php';
                             <input type="text" name="full_name" value="<?= htmlspecialchars($user['full_name'] ?? '') ?>" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">Nama Lengkap</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Nama Pengguna (Username)</label>
                             <input type="text" name="username" value="<?= htmlspecialchars($user['username'] ?? '') ?>" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
                         </div>
                     </div>
