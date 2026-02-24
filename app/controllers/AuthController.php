@@ -2,6 +2,10 @@
 
 class AuthController extends Controller {
 
+    public function admin() {
+        $this->adminLogin();
+    }
+
     public function login() {
         // If GET, load User Login View
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
