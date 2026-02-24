@@ -111,8 +111,8 @@
                                 <form action="<?= BASEURL ?>/customer/addToCart" method="POST">
                                     <input type="hidden" name="food_id" value="<?= $food['food_id'] ?>">
                                     <input type="hidden" name="qty" value="1">
-                                    <button type="submit" class="w-full py-3.5 bg-gray-50 border border-gray-200 text-secondary font-bold rounded-xl hover:bg-primary hover:border-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn relative overflow-hidden">
-                                        <span class="relative z-10 flex items-center gap-2"><i class="fas fa-shopping-cart text-lg"></i> Tambah ke Keranjang</span>
+                                    <button type="submit" class="w-full py-2.5 bg-gray-50 border border-gray-200 text-secondary font-semibold text-sm rounded-xl hover:bg-primary hover:border-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn relative overflow-hidden">
+                                        <span class="relative z-10 flex items-center gap-2"><i class="fas fa-cart-plus text-base"></i> Tambah Keranjang</span>
                                         <div class="absolute inset-0 h-full w-0 bg-primary transition-all duration-300 ease-out group-hover/btn:w-full z-0"></div>
                                     </button>
                                 </form>
