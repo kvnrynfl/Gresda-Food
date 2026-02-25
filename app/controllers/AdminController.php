@@ -54,7 +54,7 @@ class AdminController extends Controller {
 
     public function createFood() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $upload = Upload::image($_FILES['image'], '../public/uploads/foods');
+            $upload = Upload::image($_FILES['image'], '../public/images/foods');
             
             if ($upload['status']) {
                 $postData = Sanitize::array($_POST);
@@ -74,7 +74,7 @@ class AdminController extends Controller {
             $postData = Sanitize::array($_POST);
             
             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                $upload = Upload::image($_FILES['image'], '../public/uploads/foods');
+                $upload = Upload::image($_FILES['image'], '../public/images/foods');
                 if ($upload['status']) {
                     $postData['image_name'] = $upload['filename'];
                 }
