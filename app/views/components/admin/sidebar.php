@@ -36,6 +36,7 @@
                     ['url' => '/admin/orders', 'icon' => 'fa-inbox', 'label' => 'Pesanan Masuk', 'badge' => 'Baru'],
                     ['url' => '/admin/categories', 'icon' => 'fa-folder-tree', 'label' => 'Kategori Menu'],
                     ['url' => '/admin/foods', 'icon' => 'fa-burger', 'label' => 'Daftar Menu'],
+                    ['url' => '/admin/paymentMethods', 'icon' => 'fa-credit-card', 'label' => 'Metode Pembayaran'],
                 ];
                 
                 $user_items = [
