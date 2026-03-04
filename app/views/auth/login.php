@@ -1,65 +1,74 @@
 <?php 
-$auth_heading = "Selamat Datang Kembali";
-$auth_subheading = "Masuk untuk mengelola keranjang, pesanan, dan profil Anda.";
+$page_title = "Masuk";
+$back_link = BASEURL . "/";
+$hide_card = true;
 ob_start(); 
 ?>
 
-<form class="space-y-6" action="<?= BASEURL ?>/auth/login" method="POST" data-aos="fade-up" data-aos-duration="800">
-    <?= CSRF::getTokenField() ?>
-    
-    <?php 
-    $props = ['name' => 'login_id', 'label' => 'Nama Pengguna atau Email', 'icon' => 'fas fa-user', 'placeholder' => 'username atau email', 'required' => true, 'value' => $login_id ?? ''];
-    include '../app/views/components/ui/input.php';
-    ?>
+<div class="container mx-auto px-4 max-w-xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-8">
+            <?php if(!empty($error)): ?>
+                <div class="bg-cyan-50 text-primary p-4 rounded-lg mb-6 flex items-center gap-3">
+                    <i class="fas fa-exclamation-circle text-xl"></i> <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
+            <?php if(!empty($success)): ?>
+                <div class="bg-green-50 text-green-600 p-4 rounded-lg mb-6 flex items-center gap-3">
+                    <i class="fas fa-check-circle text-xl"></i> <?= htmlspecialchars($success) ?>
+                </div>
+            <?php endif; ?>
 
-    <?php
-    $props = ['name' => 'password', 'type' => 'password', 'label' => 'Kata Sandi', 'icon' => 'fas fa-lock', 'placeholder' => '••••••••', 'required' => true];
-    include '../app/views/components/ui/input.php';
-    ?>
+            <div class="mb-8 text-center text-gray-500">
+                <i class="fas fa-sign-in-alt text-5xl mb-4 text-primary"></i>
+                <p>Masuk untuk mengelola keranjang, pesanan, dan profil Anda.</p>
+            </div>
 
-    <div class="flex items-center justify-between">
-        <div class="flex items-center">
-            <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-                Ingat saya
-            </label>
+            <form action="<?= BASEURL ?>/auth/login" method="POST" class="space-y-6">
+                <?= CSRF::getTokenField() ?>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Nama Pengguna atau Email</label>
+                    <input type="text" name="login_id" value="<?= htmlspecialchars($login_id ?? '') ?>" required placeholder="username atau email" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-cyan-700 transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Kata Sandi</label>
+                    <input type="password" name="password" required placeholder="••••••••" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-cyan-700 transition">
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember_me" name="remember_me" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary accent-primary">
+                        <label for="remember_me" class="ml-2 block text-sm text-gray-700 font-medium">Ingat saya</label>
+                    </div>
+                    <a href="<?= BASEURL ?>/auth/forgotPassword" class="text-sm font-bold text-primary hover:text-cyan-700 transition">Lupa kata sandi?</a>
+                </div>
+
+                <button type="submit" class="w-full bg-primary hover:bg-cyan-800 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-cyan-600/30 transition transform hover:-translate-y-0.5 active:translate-y-0">
+                    Masuk
+                </button>
+            </form>
+
+            <div class="mt-8 relative">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gray-200"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-white text-gray-500 font-medium">Belum punya akun?</span>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <a href="<?= BASEURL ?>/auth/register" class="w-full block text-center py-3 px-4 border-2 border-gray-200 hover:border-primary hover:bg-cyan-50 text-gray-700 hover:text-primary font-bold rounded-xl transition">
+                    Buat Akun Baru
+                </a>
+            </div>
         </div>
-
-        <div class="text-sm">
-            <a href="javascript:void(0)" onclick="Swal.fire({title: 'Hubungi Admin', text: 'Fitur reset otomatis sedang dalam pengembangan. Silakan hubungi tim Admin kami untuk mereset kata sandi Anda.', icon: 'info', confirmButtonColor: '#06b6d4'})" class="font-medium text-primary hover:text-cyan-700 transition">
-                Lupa kata sandi Anda?
-            </a>
-        </div>
     </div>
-
-    <div>
-        <?php 
-        $props = ['text' => 'Masuk', 'type' => 'submit', 'variant' => 'primary', 'w_full' => true, 'class' => 'border-b-4 border-cyan-700 text-lg'];
-        include '../app/views/components/ui/button.php';
-        ?>
-    </div>
-</form>
-
-<div class="mt-8 relative">
-    <div class="absolute inset-0 flex items-center" aria-hidden="true">
-        <div class="w-full border-t border-gray-200"></div>
-    </div>
-    <div class="relative flex justify-center text-sm">
-        <span class="px-2 bg-white text-gray-500 font-medium tracking-wide">
-            Belum punya akun?
-        </span>
-    </div>
-</div>
-
-<div class="mt-6">
-    <?php 
-    $props = ['text' => 'Buat Akun Baru', 'type' => 'a', 'href' => BASEURL . '/auth/register', 'variant' => 'outline', 'w_full' => true];
-    include '../app/views/components/ui/button.php';
-    ?>
 </div>
 
 <?php 
 $slot = ob_get_clean();
-include '../app/views/components/auth_layout.php'; 
+include '../app/views/components/app_layout.php'; 
 ?>
-
