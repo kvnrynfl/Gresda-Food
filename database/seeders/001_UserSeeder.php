@@ -19,6 +19,7 @@ return function ($db) {
             'address' => 'Gresda Food HQ, Bandung',
             'role' => 'admin',
             'email_verified_at' => $now,
+            'img_user' => 'default.jpg',
         ],
         [
             'id' => '1bf85fa8-7c6e-46f5-8e1f-ed186ca8f64b',
@@ -26,9 +27,10 @@ return function ($db) {
             'username' => 'kevinreynaufal',
             'email' => 'kevinreynaufal2004@gmail.com',
             'phone' => '081234567891',
-            'address' => 'Komplek Baleendah Permai Blok Z No 5',
+            'address' => 'Mars perumahan nullable blok a no 1',
             'role' => 'customer',
             'email_verified_at' => $now,
+            'img_user' => 'e1a660a648950165_1772655080.jpg',
         ],
         [
             'id' => 'b2afcaeb-b6d2-4097-bb45-53007d358366',
@@ -39,6 +41,7 @@ return function ($db) {
             'address' => 'Komplek Baleendah Permai Jalan Padi Endah 5 No 200',
             'role' => 'customer',
             'email_verified_at' => $now,
+            'img_user' => '24a84b44655302a4_1772655367.jpg',
         ],
         [
             'id' => '2b8a42fb-3dc5-42c0-afb9-9ba56bd9bc99',
@@ -49,6 +52,7 @@ return function ($db) {
             'address' => 'Jl Cibuntu Selatan RT 02 / RW 10',
             'role' => 'customer',
             'email_verified_at' => $now,
+            'img_user' => '43a6e3b8503890eb_1772655390.jpg',
         ],
         [
             'id' => 'd817e654-c978-4cd0-a878-6872888472b3',
@@ -59,12 +63,13 @@ return function ($db) {
             'address' => 'JL. Wuluku No 24',
             'role' => 'customer',
             'email_verified_at' => $now,
+            'img_user' => '26df3d7080d18c0d_1772655413.jpg',
         ],
     ];
 
     foreach ($users as $user) {
-        $db->query("INSERT INTO tbl_users (id, full_name, username, email, password, phone, address, role, email_verified_at) 
-                     VALUES (:id, :full_name, :username, :email, :password, :phone, :address, :role, :verified)");
+        $db->query("INSERT INTO tbl_users (id, full_name, username, email, password, phone, address, role, email_verified_at, img_user) 
+                     VALUES (:id, :full_name, :username, :email, :password, :phone, :address, :role, :verified, :img_user)");
         $db->bind(':id', $user['id']);
         $db->bind(':full_name', $user['full_name']);
         $db->bind(':username', $user['username']);
@@ -74,6 +79,7 @@ return function ($db) {
         $db->bind(':address', $user['address']);
         $db->bind(':role', $user['role']);
         $db->bind(':verified', $user['email_verified_at']);
+        $db->bind(':img_user', $user['img_user']);
         $db->execute();
     }
 
