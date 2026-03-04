@@ -27,7 +27,7 @@ if(is_array($recent_orders)) {
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
     <div class="bg-gradient-to-r from-cyan-600 to-primary h-40 relative flex items-center px-8 sm:px-32">
         <div class="absolute -bottom-12 left-8">
-            <img src="<?= BASEURL ?>/images/users/<?= htmlspecialchars($user['img_user'] ?? 'default.jpg') ?>" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($user['username'] ?? 'User') ?>&background=E53E3E&color=fff'" alt="Profile" class="w-24 h-24 rounded-full border-4 border-white object-cover shadow-lg bg-white">
+            <img src="<?= BASEURL ?>/uploads/users/<?= htmlspecialchars($user['img_user'] ?? 'default.jpg') ?>" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($user['username'] ?? 'User') ?>&background=E53E3E&color=fff'" alt="Profile" class="w-24 h-24 rounded-full border-4 border-white object-cover shadow-lg bg-white">
         </div>
     </div>
     <div class="pt-16 pb-8 px-8 flex justify-between items-center">

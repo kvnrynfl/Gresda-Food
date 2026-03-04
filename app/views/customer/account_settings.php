@@ -23,7 +23,7 @@ ob_start();
             
             <div class="flex items-center gap-6 p-4 bg-gray-50 rounded-xl border border-gray-200 !mt-1">
                 <div class="relative group">
-                    <img id="profileImagePreview" src="<?= BASEURL ?>/images/users/<?= htmlspecialchars($user['img_user'] ?? 'default.jpg') ?>" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($user['username'] ?? 'User') ?>&background=E53E3E&color=fff'">
+                    <img id="profileImagePreview" src="<?= BASEURL ?>/uploads/users/<?= htmlspecialchars($user['img_user'] ?? 'default.jpg') ?>" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($user['username'] ?? 'User') ?>&background=E53E3E&color=fff'">
                     <label class="absolute inset-0 bg-black/50 text-white rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
                         <i class="fas fa-camera text-xl mb-1"></i>
                         <span class="text-xs font-bold">Ubah</span>

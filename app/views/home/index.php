@@ -167,7 +167,7 @@
                     </div>
                     <p class="text-gray-700 italic mb-6 leading-relaxed flex-grow line-clamp-4">"<?= htmlspecialchars($review['message']) ?>"</p>
                     <div class="flex items-center gap-4 mt-auto border-t border-gray-50 pt-4">
-                        <img src="<?= BASEURL ?>/images/users/<?= htmlspecialchars($review['img_user'] ?? 'default.jpg') ?>" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($review['username'] ?? 'User') ?>&background=E53E3E&color=fff'" alt="<?= htmlspecialchars($review['username']) ?>" class="w-12 h-12 rounded-full object-cover shadow-sm border-2 border-white">
+                        <img src="<?= BASEURL ?>/uploads/users/<?= htmlspecialchars($review['img_user'] ?? 'default.jpg') ?>" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($review['username'] ?? 'User') ?>&background=E53E3E&color=fff'" alt="<?= htmlspecialchars($review['username']) ?>" class="w-12 h-12 rounded-full object-cover shadow-sm border-2 border-white">
                         <div>
                             <h4 class="font-bold text-secondary text-base"><?= htmlspecialchars($review['username']) ?></h4>
                             <span class="text-xs text-gray-500 font-medium">Pelanggan Gresda</span>

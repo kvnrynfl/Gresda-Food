@@ -21,7 +21,7 @@ ob_start();
     <div class="p-8 sm:p-10">
         <div class="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left pb-8 border-b border-slate-100/80">
             <div class="relative">
-                <img src="<?= BASEURL ?>/images/users/<?= htmlspecialchars($client['img_user'] ?? 'default.jpg') ?>" class="w-32 h-32 rounded-[24px] border border-slate-200/60 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.15)] object-cover ring-4 ring-slate-50" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($client['username']) ?>&background=random&color=fff'">
+                <img src="<?= BASEURL ?>/uploads/users/<?= htmlspecialchars($client['img_user'] ?? 'default.jpg') ?>" class="w-32 h-32 rounded-[24px] border border-slate-200/60 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.15)] object-cover ring-4 ring-slate-50" onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($client['username']) ?>&background=random&color=fff'">
             </div>
             
             <div class="flex-1 w-full space-y-6">
