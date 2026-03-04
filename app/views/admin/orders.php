@@ -1,106 +1,151 @@
 <?php 
 $title = "Kelola Pesanan Aktif";
-include '../app/views/layouts/admin_header.php'; 
+ob_start();
+
+$statusLabels = [
+    'pending_payment' => 'Menunggu Bayar',
+    'confirmed' => 'Dikonfirmasi',
+    'processing' => 'Diproses',
+    'delivering' => 'Dikirim',
+    'finished' => 'Selesai',
+    'cancelled' => 'Dibatalkan'
+];
+$statusColors = [
+    'pending_payment' => 'blue',
+    'confirmed' => 'indigo',
+    'processing' => 'violet',
+    'delivering' => 'orange',
+    'finished' => 'green',
+    'cancelled' => 'red'
+];
 ?>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center bg-gray-50 gap-4">
-        <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-boxes mr-2 text-primary"></i> Panel Pelacakan Pesanan</h3>
-        <div class="flex gap-2 text-sm font-semibold">
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500"></span> Pembayaran</span>
-            <span class="flex items-center gap-1 ml-3"><span class="w-3 h-3 rounded-full bg-orange-500"></span> Pengiriman</span>
-            <span class="flex items-center gap-1 ml-3"><span class="w-3 h-3 rounded-full bg-green-500"></span> Selesai</span>
-        </div>
+<!-- Premium Page Header -->
+<div class="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 group">
+    <div>
+        <h3 class="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <i class="fas fa-boxes text-indigo-500 bg-indigo-50/50 w-12 h-12 rounded-[14px] flex items-center justify-center"></i>
+            Panel Pelacakan Pesanan
+        </h3>
+        <p class="text-slate-500 text-[13px] font-medium mt-2 max-w-lg">Pantau dan kelola semua pesanan pelanggan yang sedang aktif dalam siklus waktu nyata.</p>
     </div>
     
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse min-w-[1000px]">
-            <thead>
-                <tr class="bg-white text-gray-500 text-xs uppercase tracking-wider font-semibold border-b border-gray-200">
-                    <td class="px-6 py-4 w-16">No.</td>
-                    <td class="px-6 py-4">Ref Pesanan</td>
-                    <td class="px-6 py-4">Info Pelanggan</td>
-                    <td class="px-6 py-4 w-32 text-center">Tgl Dibuat / Tgl Update</td>
-                    <td class="px-6 py-4 text-center w-48">Status Saat Ini</td>
-                    <td class="px-6 py-4 text-center w-64">Aksi</td>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                <?php if(!empty($orders)): $sn=1; foreach($orders as $order): ?>
-                    <tr class="hover:bg-gray-50 transition group <?= ($order['status'] === 'Finished') ? 'opacity-60 bg-gray-50' : '' ?>">
-                        <td class="px-6 py-4 text-sm text-gray-500"><?= $sn++ ?>.</td>
-                        <td class="px-6 py-4 font-mono font-bold text-gray-800">#<?= htmlspecialchars($order['order_id']) ?></td>
-                        <td class="px-6 py-4">
-                            <div class="font-bold text-gray-800 flex items-center gap-2">
-                                <i class="fas fa-user-circle text-gray-400"></i>
-                                <?= htmlspecialchars($order['username'] ?? 'User #'.$order['user_id']) ?>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-xs text-gray-500 text-center font-mono">
-                            <div class="mb-1 text-gray-600" title="Waktu Dibuat"><i class="fas fa-plus-circle text-green-500 mr-1"></i> <?= date('d M y H:i', strtotime($order['created_at'])) ?></div>
-                            <div title="Waktu Pembaharuan"><i class="fas fa-edit text-blue-400 mr-1"></i> <?= date('d M y H:i', strtotime($order['updated_at'])) ?></div>
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <?php 
-                                $statusMap = [
-                                    'Cart' => 'Keranjang',
-                                    'Payment' => 'Pembayaran',
-                                    'Confirmed' => 'Dikonfirmasi',
-                                    'Delivery' => 'Pengiriman',
-                                    'Finished' => 'Selesai',
-                                    'Canceled' => 'Dibatalkan'
-                                ];
-                                $statusClass = 'bg-gray-100 text-gray-600';
-                                $icon = 'fa-clock';
-                                switch($order['status']) {
-                                    case 'Cart': $statusClass = 'bg-gray-100 text-gray-600'; $icon = 'fa-shopping-cart'; break;
-                                    case 'Payment': $statusClass = 'bg-blue-100 text-blue-700'; $icon = 'fa-wallet'; break;
-                                    case 'Confirmed': $statusClass = 'bg-indigo-100 text-indigo-700'; $icon = 'fa-check'; break;
-                                    case 'Delivery': $statusClass = 'bg-orange-100 text-orange-700'; $icon = 'fa-motorcycle'; break;
-                                    case 'Finished': $statusClass = 'bg-green-100 text-green-700'; $icon = 'fa-box-open'; break;
-                                    case 'Canceled': $statusClass = 'bg-cyan-100 text-cyan-700'; $icon = 'fa-ban'; break;
-                                }
-                            ?>
-                            <div class="inline-flex items-center gap-1.5 <?= $statusClass ?> px-3 py-1 rounded-full font-bold text-xs ring-1 ring-inset ring-current/20">
-                                <i class="fas <?= $icon ?>"></i> <?= htmlspecialchars($statusMap[$order['status']] ?? $order['status']) ?>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <div class="flex flex-col gap-2 items-center justify-center">
-                                <?php if ($order['status'] !== 'Finished' && $order['status'] !== 'Canceled' && $order['status'] !== 'Cart'): ?>
-                                <form action="<?= BASEURL ?>/admin/updateOrderStatus/<?= urlencode($order['order_id']) ?>" method="POST" class="flex gap-1 justify-center w-full">
-                                    <?= CSRF::getTokenField() ?>
-                                    <select name="status" class="text-xs border border-gray-300 rounded-lg px-2 py-1 outline-none focus:ring-1 focus:ring-primary focus:border-primary w-28">
-                                        <option value="Confirmed" <?= ($order['status'] == 'Confirmed') ? 'selected' : '' ?>>Dikonfirmasi</option>
-                                        <option value="Delivery" <?= ($order['status'] == 'Delivery') ? 'selected' : '' ?>>Pengiriman</option>
-                                        <option value="Finished" <?= ($order['status'] == 'Finished') ? 'selected' : '' ?>>Selesai</option>
-                                        <option value="Canceled">Batalkan</option>
-                                    </select>
-                                    <button type="submit" title="Simpan Status" class="bg-gray-800 text-white text-xs px-2 py-1 rounded-lg hover:bg-black transition font-semibold shadow-sm">
-                                        <i class="fas fa-save"></i>
-                                    </button>
-                                </form>
-                                <?php endif; ?>
-                                <a href="<?= BASEURL ?>/admin/orderDetails/<?= urlencode($order['order_id']) ?>" class="bg-white border border-primary text-primary hover:bg-primary hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-sm w-full text-center">
-                                    <i class="fas fa-eye mr-1"></i> Detail Pesanan
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; else: ?>
-                    <tr>
-                        <td colspan="6" class="px-6 py-16 text-center text-gray-400">
-                            <i class="fas fa-clipboard-list text-5xl mb-4 text-gray-200"></i>
-                            <h3 class="text-xl font-bold text-gray-500 mb-1">Tidak Ada Pesanan Aktif</h3>
-                            <p>Pelanggan belum melakukan pesanan apa pun akhir-akhir ini.</p>
-                        </td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+    <div class="flex flex-wrap gap-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest bg-white px-5 py-3 rounded-xl border border-slate-200/80 hover:shadow-[0_4px_24px_rgba(0,0,0,0.03)] transition-all">
+        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50"></span> Menunggu Bayar</span>
+        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50"></span> Dikonfirmasi</span>
+        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-500/50"></span> Dikirim</span>
+        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span> Selesai</span>
     </div>
 </div>
 
-<?php include '../app/views/layouts/admin_footer.php'; ?>
+<?php
+$headers = [
+    ['text' => 'No.', 'class' => 'w-16 whitespace-nowrap text-center'],
+    ['text' => 'No. Pesanan & Pelanggan', 'class' => ''],
+    ['text' => 'Total', 'class' => 'text-right'],
+    ['text' => 'Status', 'class' => 'text-center w-40'],
+    ['text' => 'Aksi', 'class' => 'text-right min-w-[200px]']
+];
+$is_empty = empty($orders);
 
+ob_start();
+if(!$is_empty): $sn=1; foreach($orders as $transaction): ?>
+    <tr x-data="{ showStatusModal: false }" class="group transition-colors <?= ($transaction['status'] === 'finished') ? 'opacity-60 bg-slate-50/50' : '' ?>">
+        <td class="text-sm text-slate-400 font-bold text-center"><?= $sn++ ?>.</td>
+        <td>
+            <div class="font-extrabold text-[15px] text-slate-800 line-clamp-1 mb-1 tracking-tight">
+                <?= htmlspecialchars($transaction['order_number'] ?? substr($transaction['id'], 0, 8)) ?>
+            </div>
+            <div class="text-[13px] text-indigo-500 font-bold flex items-center gap-1.5">
+                <i class="fas fa-user-circle"></i> <?= htmlspecialchars($transaction['customer_name'] ?? $transaction['username'] ?? 'N/A') ?>
+            </div>
+            <div class="text-[11px] text-slate-400 font-mono mt-1">
+                <i class="fas fa-calendar-day mr-1 opacity-50"></i><?= date('d M y H:i', strtotime($transaction['created_at'])) ?>
+            </div>
+        </td>
+        <td class="text-right text-[15px] font-black text-slate-800">
+            Rp <?= number_format($transaction['grand_total'] ?? 0, 0, ',', '.') ?>
+        </td>
+        <td class="text-center">
+            <?php 
+                $text = $statusLabels[$transaction['status']] ?? $transaction['status'];
+                $color = $statusColors[$transaction['status']] ?? 'gray';
+                $icon = false;
+                include __DIR__ . '/../components/admin/ui/badge.php';
+            ?>
+        </td>
+        <td class="text-right">
+            <div class="flex items-center justify-end gap-2.5 w-full">
+                <?php
+                    $type = 'a';
+                    $href = BASEURL . '/admin/orderDetails/' . urlencode($transaction['id']);
+                    $color = 'indigo';
+                    $icon = 'fas fa-search';
+                    $btn_title = 'Detail';
+                    $btn_label = 'Detail';
+                    $extra_attr = '';
+                    include __DIR__ . '/../components/admin/ui/action_button.php';
 
+                    if (!in_array($transaction['status'], ['finished', 'cancelled'])):
+                    $type = 'button';
+                    $color = 'amber';
+                    $icon = 'fas fa-sync-alt';
+                    $btn_title = 'Ubah Status Pesanan';
+                    $btn_label = 'Status';
+                    $extra_attr = '@click="showStatusModal = true"';
+                    include __DIR__ . '/../components/admin/ui/action_button.php';
+                    endif;
+                ?>
+            </div>
+
+            <!-- Modal Background -->
+            <div x-show="showStatusModal" style="display: none;" class="fixed inset-0 z-[99] bg-slate-900/40 backdrop-blur-sm transition-opacity text-left" x-transition.opacity></div>
+
+            <!-- Modal Panel -->
+            <div x-show="showStatusModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left" x-transition.opacity>
+                <div @click.outside="showStatusModal = false" class="bg-white rounded-[24px] shadow-2xl w-full max-w-md overflow-hidden transform transition-all" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 class="text-lg font-black text-slate-800">Ubah Status Pesanan</h3>
+                        <button type="button" @click="showStatusModal = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                            <i class="fas fa-times text-lg"></i>
+                        </button>
+                    </div>
+                    <form action="<?= BASEURL ?>/admin/updateOrderStatus/<?= urlencode($transaction['id']) ?>" method="POST" class="p-6">
+                        <?= CSRF::getTokenField() ?>
+                        <div class="mb-5">
+                            <p class="text-[13px] text-slate-500 mb-3">Tentukan status terbaru untuk pesanan <strong class="text-slate-700 font-extrabold"><?= htmlspecialchars($transaction['order_number'] ?? '') ?></strong>:</p>
+                            <div class="relative">
+                                <select name="status" class="w-full text-[14px] font-bold text-slate-700 border border-slate-200 bg-white rounded-xl px-4 py-3.5 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all appearance-none cursor-pointer">
+                                    <option value="confirmed" <?= ($transaction['status'] == 'confirmed') ? 'selected' : '' ?>>Dikonfirmasi (Pembayaran Diterima)</option>
+                                    <option value="processing" <?= ($transaction['status'] == 'processing') ? 'selected' : '' ?>>Sedang Diproses</option>
+                                    <option value="delivering" <?= ($transaction['status'] == 'delivering') ? 'selected' : '' ?>>Dalam Pengiriman</option>
+                                    <option value="finished" <?= ($transaction['status'] == 'finished') ? 'selected' : '' ?>>Selesai</option>
+                                    <option value="cancelled">Batalkan Pesanan</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-[12px] pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 justify-end mt-8">
+                            <button type="button" @click="showStatusModal = false" class="px-5 py-2.5 rounded-xl text-[13px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Batal</button>
+                            <button type="submit" class="px-5 py-2.5 rounded-xl text-[13px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] transition-all">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </td>
+    </tr>
+<?php endforeach; endif;
+
+$tableSlot = ob_get_clean();
+
+$slot = $tableSlot;
+$empty_icon = 'fas fa-clipboard-list';
+$empty_title = 'Tidak Ada Pesanan Aktif';
+$empty_message = 'Pelanggan belum melakukan pesanan apa pun akhir-akhir ini.';
+include __DIR__ . '/../components/admin/ui/data_table.php';
+?>
+
+<?php 
+$slot = ob_get_clean();
+include __DIR__ . '/../components/admin/layout.php';
+?>

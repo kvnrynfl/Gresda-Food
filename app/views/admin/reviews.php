@@ -1,104 +1,155 @@
 <?php 
-$title = "Kelola Ulasan Pelanggan";
-include '../app/views/layouts/admin_header.php'; 
+$title = "Kelola Testimoni Pelanggan";
+ob_start();
 ?>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-        <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-star mr-2 text-yellow-500"></i> Umpan Balik Pelanggan</h3>
-    </div>
-    
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse min-w-[800px]">
-            <thead>
-                <tr class="bg-white text-gray-500 text-xs uppercase tracking-wider font-semibold border-b border-gray-200">
-                    <td class="px-6 py-4 w-16">ID</td>
-                    <td class="px-6 py-4">Makanan / Pelanggan</td>
-                    <td class="px-6 py-4">Penilaian</td>
-                    <td class="px-6 py-4">Teks Ulasan</td>
-                    <td class="px-6 py-4 w-32 text-center">Tanggal Dibuat</td>
-                    <td class="px-6 py-4 w-32 text-center">Status</td>
-                    <td class="px-6 py-4 w-28 text-center">Aksi</td>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                <?php if(!empty($reviews)): foreach($reviews as $review): ?>
-                    <tr class="hover:bg-blue-50 transition group">
-                        <td class="px-6 py-4 text-sm text-gray-500 font-mono">#<?= $review['id'] ?></td>
-                        <td class="px-6 py-4">
-                            <div class="font-bold text-gray-800 line-clamp-1">Pesanan #<?= htmlspecialchars($review['order_id'] ?? 'Tidak Diketahui') ?></div>
-                            <div class="text-xs text-gray-500">Oleh pengguna #<?= htmlspecialchars($review['user_id']) ?></div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex text-yellow-400">
-                                <?php 
-                                    $rating = floor($review['rating'] ?? 0);
-                                    for($i = 0; $i < 5; $i++) {
-                                        if($i < $rating) echo '<i class="fas fa-star text-sm"></i>';
-                                        else echo '<i class="far fa-star text-sm"></i>';
-                                    }
-                                ?>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600 line-clamp-2 md:line-clamp-3 w-64">
-                            <?= nl2br(htmlspecialchars($review['message'] ?? '')) ?>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-500 font-mono text-center">
-                            <?= date('d M Y, H:i', strtotime($review['created_at'])) ?>
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <?php if (($review['active'] ?? '') === 'Yes'): ?>
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs inline-flex items-center gap-1"><i class="fas fa-check-circle"></i> Publik</span>
-                            <?php elseif (($review['active'] ?? '') === 'No'): ?>
-                                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-bold text-xs inline-flex items-center gap-1"><i class="fas fa-eye-slash"></i> Sembunyi</span>
-                            <?php else: ?>
-                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-bold text-xs inline-flex items-center gap-1 animate-pulse"><i class="fas fa-clock"></i> Tertunda</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <?php if (($review['active'] ?? '') !== 'Yes'): ?>
-                                    <form action="<?= BASEURL ?>/admin/updateReviewStatus/<?= $review['id'] ?>" method="POST">
-                                        <?= CSRF::getTokenField() ?>
-                                        <input type="hidden" name="status" value="Yes">
-                                        <button type="submit" class="w-8 h-8 rounded-full bg-green-50 text-green-600 inline-flex items-center justify-center hover:bg-green-600 hover:text-white transition shadow-sm" title="Tampilkan Ulasan">
-                                            <i class="fas fa-check text-xs"></i>
-                                        </button>
-                                    </form>
-                                <?php endif; ?>
-                                
-                                <?php if (($review['active'] ?? '') !== 'No'): ?>
-                                    <form action="<?= BASEURL ?>/admin/updateReviewStatus/<?= $review['id'] ?>" method="POST">
-                                        <?= CSRF::getTokenField() ?>
-                                        <input type="hidden" name="status" value="No">
-                                        <button type="submit" class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 inline-flex items-center justify-center hover:bg-gray-600 hover:text-white transition shadow-sm" title="Sembunyikan Ulasan">
-                                            <i class="fas fa-times text-xs"></i>
-                                        </button>
-                                    </form>
-                                <?php endif; ?>
-
-                                <form action="<?= BASEURL ?>/admin/deleteReview/<?= $review['id'] ?>" method="POST" onsubmit="return confirm('Hapus ulasan ini sepenuhnya?');">
-                                    <?= CSRF::getTokenField() ?>
-                                    <button type="submit" class="w-8 h-8 rounded-full bg-red-50 text-red-600 inline-flex items-center justify-center hover:bg-red-600 hover:text-white transition shadow-sm" title="Hapus Permanen">
-                                        <i class="fas fa-trash-alt text-xs"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; else: ?>
-                    <tr>
-                        <td colspan="7" class="px-6 py-16 text-center text-gray-400">
-                            <i class="far fa-comment-dots text-5xl mb-4 text-gray-200"></i>
-                            <h3 class="text-xl font-bold text-gray-500 mb-1">Tidak Ada Ulasan</h3>
-                            <p>Pelanggan belum mengirimkan umpan balik apa pun.</p>
-                        </td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+<!-- Premium Page Header -->
+<div class="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 group">
+    <div>
+        <h3 class="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <i class="fas fa-star text-indigo-500 bg-indigo-50/50 w-12 h-12 rounded-[14px] flex items-center justify-center"></i>
+            Testimoni Pelanggan
+        </h3>
+        <p class="text-slate-500 text-[13px] font-medium mt-2 max-w-lg">Bermitra dengan bukti interaksi pelanggan positif</p>
     </div>
 </div>
 
-<?php include '../app/views/layouts/admin_footer.php'; ?>
+<?php
+$headers = [
+    ['text' => 'No.', 'class' => 'w-16 whitespace-nowrap text-center'],
+    ['text' => 'Ref Transisi', 'class' => ''],
+    ['text' => 'Tingkat Metrik', 'class' => ''],
+    ['text' => 'Teks Testimoni', 'class' => ''],
+    ['text' => 'Jejak Waktu', 'class' => ''],
+    ['text' => 'Status Berita', 'class' => 'w-32 text-center'],
+    ['text' => 'Resolusi', 'class' => 'w-48 text-right']
+];
+$is_empty = empty($reviews);
+
+ob_start();
+if(!$is_empty): $sn=1; foreach($reviews as $review): ?>
+    <tr class="group">
+        <td class="text-sm text-slate-400 font-bold text-center"><?= $sn++ ?>.</td>
+        <td>
+            <div class="font-extrabold text-[15px] text-slate-800 line-clamp-1 mb-1 tracking-tight">
+                <span class="text-slate-400 font-medium text-[13px] mr-1"></span>#<?= htmlspecialchars($review['order_id'] ?? 'N/A') ?>
+            </div>
+            <div class="text-[13px] text-indigo-500 font-bold flex items-center gap-1.5">
+                <i class="fas fa-user-circle"></i> <?= htmlspecialchars($review['username'] ?? 'User #'.$review['user_id']) ?>
+            </div>
+        </td>
+        <td>
+            <div class="flex text-amber-500 gap-0.5">
+                <?php 
+                    $rating = floor($review['rating'] ?? 0);
+                    for($i = 0; $i < 5; $i++) {
+                        if($i < $rating) echo '<i class="fas fa-star text-[14px]"></i>';
+                        else echo '<i class="far fa-star text-[14px] text-slate-300"></i>';
+                    }
+                ?>
+            </div>
+        </td>
+        <td class="text-[13px] text-slate-600 font-medium leading-relaxed max-w-xs xl:max-w-sm">
+            <div class="line-clamp-2">
+                <?= nl2br(htmlspecialchars($review['message'] ?? '')) ?>
+            </div>
+        </td>
+        <td class="text-[11px] text-slate-400 font-bold uppercase tracking-wide whitespace-nowrap">
+            <div class="mb-1.5 flex items-center text-slate-500"><i class="fas fa-arrow-turn-up text-emerald-500/70 mr-1.5 w-3 text-center"></i> <?= strtoupper(date('d M y H:i', strtotime($review['created_at']))) ?></div>
+            <div class="flex items-center"><i class="fas fa-pen text-indigo-400/70 mr-1.5 w-3 text-center"></i> <?= strtoupper(date('d M y H:i', strtotime($review['updated_at'] ?? $review['created_at']))) ?></div>
+        </td>
+        <td class="text-center">
+            <?php 
+                $reviewStatus = $review['status'] ?? 'pending';
+                if ($reviewStatus === 'approved') {
+                    $text = 'Dipublikasi';
+                    $color = 'green';
+                    $icon = 'fas fa-check-circle';
+                } elseif ($reviewStatus === 'rejected') {
+                    $text = 'Ditolak';
+                    $color = 'red';
+                    $icon = 'fas fa-times-circle';
+                } else {
+                    $text = 'Menunggu';
+                    $color = 'orange';
+                    $icon = 'fas fa-clock';
+                }
+                include __DIR__ . '/../components/admin/ui/badge.php';
+            ?>
+        </td>
+        <td class="text-right">
+            <div class="flex flex-col gap-2 w-full max-w-[140px] ml-auto">
+                <?php
+                    $type = 'a';
+                    $href = BASEURL . '/admin/reviewDetails/' . urlencode($review['id']);
+                    $color = 'indigo';
+                    $icon = 'fas fa-search';
+                    $btn_title = 'Detail';
+                    $btn_label = 'Detail';
+                    $btn_width = 'w-full';
+                    include __DIR__ . '/../components/admin/ui/action_button.php';
+                ?>
+                
+                <?php if ($review['status'] !== 'approved'): ?>
+                    <form action="<?= BASEURL ?>/admin/updateTestimonialStatus/<?= urlencode($review['id']) ?>" method="POST" class="m-0 w-full">
+                        <?= CSRF::getTokenField() ?>
+                        <input type="hidden" name="status" value="approved">
+                        <?php
+                            $type = 'button';
+                            $color = 'green';
+                            $icon = 'fas fa-check';
+                            $btn_title = 'Tampilkan';
+                            $btn_label = 'Tampilkan';
+                            $btn_width = 'w-full';
+                            include __DIR__ . '/../components/admin/ui/action_button.php';
+                        ?>
+                    </form>
+                <?php endif; ?>
+                
+                <?php if ($review['status'] === 'approved'): ?>
+                    <form action="<?= BASEURL ?>/admin/updateTestimonialStatus/<?= urlencode($review['id']) ?>" method="POST" class="m-0 w-full">
+                        <?= CSRF::getTokenField() ?>
+                        <input type="hidden" name="status" value="rejected">
+                        <?php
+                            $type = 'button';
+                            $color = 'gray';
+                            $icon = 'fas fa-eye-slash';
+                            $btn_title = 'Sembunyikan';
+                            $btn_label = 'Sembunyi';
+                            $btn_width = 'w-full';
+                            include __DIR__ . '/../components/admin/ui/action_button.php';
+                        ?>
+                    </form>
+                <?php endif; ?>
+
+                <form action="<?= BASEURL ?>/admin/deleteTestimonial/<?= urlencode($review['id']) ?>" method="POST" class="delete-form m-0 w-full" data-name="Testimoni ini">
+                    <?= CSRF::getTokenField() ?>
+                    <?php
+                        $type = 'button';
+                        $color = 'red';
+                        $icon = 'fas fa-trash-alt';
+                        $btn_title = 'Hapus';
+                        $btn_label = 'Hapus';
+                        $btn_width = 'w-full';
+                        include __DIR__ . '/../components/admin/ui/action_button.php';
+                    ?>
+                </form>
+            </div>
+        </td>
+    </tr>
+<?php endforeach; endif;
+
+$tableSlot = ob_get_clean();
+
+$slot = $tableSlot;
+$empty_icon = 'far fa-comment-dots';
+$empty_title = 'Tidak Ada Testimoni';
+$empty_message = 'Pelanggan belum mengirimkan testimoni proyek apa pun.';
+include __DIR__ . '/../components/admin/ui/data_table.php';
+?>
+
+<?php 
+$slot = ob_get_clean();
+include __DIR__ . '/../components/admin/layout.php';
+?>
 

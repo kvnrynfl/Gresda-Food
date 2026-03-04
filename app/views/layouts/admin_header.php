@@ -6,6 +6,27 @@
     <title><?= $title ?? 'Admin Portal' ?> - Gresda Food</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css">
+    <style>
+        /* Modernize DataTables slightly natively using tailwindish properties */
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: #06b6d4 !important; /* Tailwind cyan-500 */
+            color: white !important;
+            border: none;
+            border-radius: 0.375rem;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border-radius: 0.375rem;
+            margin: 0 0.25rem;
+        }
+        table.dataTable.no-footer {
+            border-bottom: 1px solid #f3f4f6;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 flex h-screen overflow-hidden">
 

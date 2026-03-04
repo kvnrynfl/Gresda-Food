@@ -1,70 +1,100 @@
 <?php 
-$title = "Kelola Kategori";
-include '../app/views/layouts/admin_header.php'; 
+$title = "Kelola Kategori Menu";
+ob_start();
 ?>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-        <h3 class="text-lg font-bold text-gray-800">Semua Kategori</h3>
-        <a href="<?= BASEURL ?>/admin/createCategory" class="px-4 py-2 bg-cyan-600 text-white rounded shadow-sm hover:bg-cyan-700 transition flex items-center gap-2 text-sm font-bold">
-            <i class="fas fa-plus"></i> Tambah Kategori Baru
-        </a>
+<!-- Premium Page Header -->
+<div class="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 group">
+    <div>
+        <h3 class="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <i class="fas fa-folder-tree text-indigo-500 bg-indigo-50/50 w-12 h-12 rounded-[14px] flex items-center justify-center"></i>
+            Semua Kategori Menu
+        </h3>
+        <p class="text-slate-500 text-[13px] font-medium mt-2 max-w-lg">Pengelompokan struktur portofolio makanan</p>
     </div>
-    
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider font-semibold border-b border-gray-200">
-                    <td class="px-6 py-4">ID</td>
-                    <td class="px-6 py-4">Nama Tampilan</td>
-                    <td class="px-6 py-4">Slug</td>
-                    <td class="px-6 py-4">Dibuat / Diperbarui</td>
-                    <td class="px-6 py-4">Status</td>
-                    <td class="px-6 py-4 text-center">Aksi</td>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                <?php if(!empty($categories)): foreach($categories as $index => $cat): ?>
-                    <tr class="hover:bg-gray-50 transition group">
-                        <td class="px-6 py-4 text-sm text-gray-500">#<?= $cat['id'] ?></td>
-                        <td class="px-6 py-4 font-bold text-gray-800"><?= htmlspecialchars($cat['name']) ?></td>
-                        <td class="px-6 py-4 text-sm text-gray-500 font-mono"><?= htmlspecialchars($cat['category']) ?></td>
-                        <td class="px-6 py-4 text-xs text-gray-400 font-mono">
-                            <div class="mb-1 text-gray-600"><i class="fas fa-plus-circle text-green-500 mr-1"></i> <?= date('d M y H:i', strtotime($cat['created_at'])) ?></div>
-                            <div><i class="fas fa-edit text-blue-400 mr-1"></i> <?= date('d M y H:i', strtotime($cat['updated_at'])) ?></div>
-                        </td>
-                        <td class="px-6 py-4 text-sm">
-                            <?php if ($cat['active'] === 'Yes'): ?>
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs"><i class="fas fa-check-circle mr-1"></i> Aktif</span>
-                            <?php else: ?>
-                                <span class="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full font-bold text-xs"><i class="fas fa-times-circle mr-1"></i> Tidak Aktif</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <a href="<?= BASEURL ?>/admin/editCategory/<?= $cat['id'] ?>" class="w-8 h-8 rounded bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition" title="Edit">
-                                    <i class="fas fa-edit text-xs"></i>
-                                </a>
-                                <form action="<?= BASEURL ?>/admin/deleteCategory/<?= $cat['id'] ?>" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');">
-                                    <button type="submit" class="w-8 h-8 rounded bg-cyan-50 text-cyan-600 flex items-center justify-center hover:bg-cyan-600 hover:text-white transition" title="Hapus">
-                                        <i class="fas fa-trash-alt text-xs"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; else: ?>
-                    <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                            <i class="fas fa-tags text-4xl mb-3 text-gray-200"></i>
-                            <p>Tidak ada kategori yang ditemukan dalam basis data.</p>
-                        </td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+    <a href="<?= BASEURL ?>/admin/createCategory" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[14px] shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2.5 text-[14px] font-extrabold whitespace-nowrap focus:outline-none focus:ring-4 focus:ring-indigo-500/20">
+        <i class="fas fa-plus"></i> <span class="hidden sm:inline">Tambah Kategori</span>
+    </a>
 </div>
 
-<?php include '../app/views/layouts/admin_footer.php'; ?>
+<?php
+$headers = [
+    ['text' => 'No.', 'class' => 'w-16 whitespace-nowrap text-center'],
+    ['text' => 'Nama Tampilan', 'class' => ''],
+    ['text' => 'Label Akses (Slug)', 'class' => ''],
+    ['text' => 'Jejak Waktu', 'class' => ''],
+    ['text' => 'Status Operasional', 'class' => ''],
+    ['text' => 'Aksi', 'class' => 'text-right min-w-[140px]']
+];
+$is_empty = empty($categories);
+
+ob_start();
+if(!$is_empty): $sn=1; foreach($categories as $index => $cat): ?>
+    <tr class="group">
+        <td class="text-sm text-slate-400 font-bold text-center"><?= $sn++ ?>.</td>
+        <td class="text-[15px] font-black text-slate-800 group-hover:text-indigo-600 transition-colors"><?= htmlspecialchars($cat['name']) ?></td>
+        <td class="text-[13px] text-slate-500 font-mono font-bold"><?= htmlspecialchars($cat['slug']) ?></td>
+        <td class="text-[11px] text-slate-400 font-bold uppercase tracking-wide whitespace-nowrap">
+            <div class="mb-1.5 flex items-center text-slate-500"><i class="fas fa-arrow-turn-up text-emerald-500/70 mr-1.5 w-3 text-center"></i> <?= date('d M y H:i', strtotime($cat['created_at'])) ?></div>
+            <div class="flex items-center"><i class="fas fa-pen text-indigo-400/70 mr-1.5 w-3 text-center"></i> <?= date('d M y H:i', strtotime($cat['updated_at'])) ?></div>
+        </td>
+        <td>
+            <?php 
+                $isActive = !empty($cat['is_active']);
+                $text = $isActive ? 'Diterapkan' : 'Dibekukan';
+                $color = $isActive ? 'green' : 'gray';
+                $icon = $isActive ? 'fas fa-check-circle' : 'fas fa-box-archive';
+                include __DIR__ . '/../components/admin/ui/badge.php';
+            ?>
+        </td>
+        <td class="text-right">
+            <div class="flex flex-col gap-2 w-full max-w-[140px] ml-auto">
+                <?php
+                    $type = 'a';
+                    $href = BASEURL . '/admin/categoryDetails/' . urlencode($cat['id']);
+                    $color = 'indigo';
+                    $icon = 'fas fa-search';
+                    $btn_title = 'Detail';
+                    $btn_label = 'Detail';
+                    $btn_width = 'w-full';
+                    include __DIR__ . '/../components/admin/ui/action_button.php';
+
+                    $href = BASEURL . '/admin/editCategory/' . urlencode($cat['id']);
+                    $color = 'blue';
+                    $icon = 'fas fa-edit';
+                    $btn_title = 'Edit';
+                    $btn_label = 'Edit';
+                    $btn_width = 'w-full';
+                    include __DIR__ . '/../components/admin/ui/action_button.php';
+                ?>
+                <form action="<?= BASEURL ?>/admin/deleteCategory/<?= urlencode($cat['id']) ?>" method="POST" class="delete-form m-0 w-full" data-name="Kategori <?= htmlspecialchars($cat['name']) ?>">
+                    <?= CSRF::getTokenField() ?>
+                    <?php
+                        $type = 'button';
+                        $color = 'red';
+                        $icon = 'fas fa-trash-alt';
+                        $btn_title = 'Hapus';
+                        $btn_label = 'Hapus';
+                        $btn_width = 'w-full';
+                        include __DIR__ . '/../components/admin/ui/action_button.php';
+                    ?>
+                </form>
+            </div>
+        </td>
+    </tr>
+<?php endforeach; endif;
+
+$tableSlot = ob_get_clean();
+
+$slot = $tableSlot;
+$empty_icon = 'fas fa-tags';
+$empty_title = 'Belum Ada Kategori';
+$empty_message = 'Tidak ada kategori yang ditemukan dalam basis data.';
+include __DIR__ . '/../components/admin/ui/data_table.php';
+?>
+
+<?php 
+$slot = ob_get_clean();
+include __DIR__ . '/../components/admin/layout.php';
+?>
 

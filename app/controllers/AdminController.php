@@ -1,258 +1,873 @@
 <?php
 
-class AdminController extends Controller {
-
-    public function __construct() {
-        if (!isset($_SESSION['admin_id']) || $_SESSION['role'] !== 'admin') {
+/**
+ * Admin Controller
+ * 
+ * Complete rewrite matching all admin view routes:
+ * - Dashboard
+ * - Categories (CRUD + detail)
+ * - Foods (CRUD + detail)
+ * - Orders (list + detail + status update + payment verify)
+ * - Users/Clients (list + detail + delete)
+ * - Admins (CRUD + password + detail)
+ * - Reviews (list + detail + status)
+ * - Contacts (list + detail + delete)
+ */
+class AdminController extends Controller
+{
+    /**
+     * Check admin access for every method call
+     */
+    private function checkAdmin()
+    {
+        if (!$this->isAdmin()) {
             $this->redirect('/auth/login');
         }
     }
 
-    public function index() {
-        $this->dashboard();
+    /**
+     * Set admin flash message (uses flash_msg/flash_type for admin layout)
+     */
+    private function adminFlash($message, $type = 'success')
+    {
+        $_SESSION['flash_msg'] = $message;
+        $_SESSION['flash_type'] = $type;
     }
 
-    public function dashboard() {
-        $categoryModel = $this->model('CategoryModel');
-        $foodModel = $this->model('FoodModel');
+    // ═══════════════════════════════════════════════════════════════
+    // DASHBOARD
+    // ═══════════════════════════════════════════════════════════════
+
+    public function dashboard()
+    {
+        $this->checkAdmin();
+
+        $orderModel = $this->model('OrderModel');
         $userModel = $this->model('UserModel');
-        $orderModel = $this->model('OrderModel');
-        
-        $active_orders_count = count(array_filter($orderModel->getAllOrders(), function($order) {
-            return !in_array($order['status'], ['Finished', 'Canceled', 'Cart']);
-        }));
+        $foodModel = $this->model('FoodModel');
+        $contactModel = $this->model('ContactModel');
 
-        $data = [
-            'total_categories' => count($categoryModel->getAll()),
-            'total_foods' => count($foodModel->getAll()),
-            'total_users' => count($userModel->getAll()),
-            'active_orders' => $active_orders_count
-        ];
-        
-        $this->view('admin/dashboard', $data);
-    }
-    
-    // Categories
-    public function categories() {
-        $data['categories'] = $this->model('CategoryModel')->getAll();
-        $this->view('admin/categories', $data);
+        $this->view('admin/dashboard', [
+            'totalOrders' => count($orderModel->getAllOrders()),
+            'totalRevenue' => $orderModel->getTotalRevenue(),
+            'totalCustomers' => $userModel->countByRole('customer'),
+            'totalFoods' => $foodModel->countActive(),
+            'recentOrders' => $orderModel->getRecentOrders(5),
+            'statusCounts' => $orderModel->getOrderStatusCounts(),
+            'unreadContacts' => $contactModel->getUnreadCount(),
+        ]);
     }
 
-    public function createCategory() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $this->model('CategoryModel')->create(Sanitize::array($_POST));
+    // ═══════════════════════════════════════════════════════════════
+    // CATEGORIES
+    // ═══════════════════════════════════════════════════════════════
+
+    public function categories()
+    {
+        $this->checkAdmin();
+        $categoryModel = $this->model('CategoryModel');
+        $this->view('admin/categories', [
+            'categories' => $categoryModel->getAllWithFoodCount(),
+        ]);
+    }
+
+    /**
+     * Show category details
+     */
+    public function categoryDetails($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
+        }
+
+        $categoryModel = $this->model('CategoryModel');
+        $category = $categoryModel->getById($id);
+
+        if (!$category) {
+            $this->show404();
+        }
+
+        $this->view('admin/category_details', ['category' => $category]);
+    }
+
+    /**
+     * Show create category form (GET) or process creation (POST)
+     */
+    public function createCategory()
+    {
+        $this->checkAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->view('admin/category_create');
+            return;
+        }
+
+        if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
             $this->redirect('/admin/categories');
+            return;
         }
-        $this->view('admin/category_create');
+
+        $_POST = Sanitize::array($_POST);
+
+        $categoryModel = $this->model('CategoryModel');
+
+        // Map view form fields to model fields
+        $slug = $_POST['category'] ?? $_POST['slug'] ?? '';
+        $isActive = ($_POST['active'] ?? 'Yes') === 'Yes' ? 1 : 0;
+
+        $categoryModel->create([
+            'name' => $_POST['name'],
+            'slug' => $slug,
+            'description' => $_POST['description'] ?? '',
+            'icon' => $_POST['icon'] ?? '',
+            'sort_order' => (int)($_POST['sort_order'] ?? 0),
+            'is_active' => $isActive,
+        ]);
+
+        $this->adminFlash('Kategori berhasil ditambahkan.');
+        $this->redirect('/admin/categories');
     }
 
-    // Foods
-    public function foods() {
-        $data['foods'] = $this->model('FoodModel')->getAll();
-        $this->view('admin/foods', $data);
-    }
-
-    public function createFood() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $upload = Upload::image($_FILES['image'], '../public/images/foods');
-            
-            if ($upload['status']) {
-                $postData = Sanitize::array($_POST);
-                $postData['image_name'] = $upload['filename'];
-                $this->model('FoodModel')->create($postData);
-                $this->redirect('/admin/foods');
-            } else {
-                die($upload['message']); // Handle properly in view in production
-            }
+    /**
+     * Show edit category form (GET) or process update (POST)
+     */
+    public function editCategory($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
         }
-        $data['categories'] = $this->model('CategoryModel')->getActive();
-        $this->view('admin/food_create', $data);
+
+        $categoryModel = $this->model('CategoryModel');
+        $category = $categoryModel->getById($id);
+
+        if (!$category) {
+            $this->show404();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
+                $this->redirect('/admin/categories');
+                return;
+            }
+
+            $_POST = Sanitize::array($_POST);
+
+            // Map view form fields to model fields
+            $slug = $_POST['category'] ?? $_POST['slug'] ?? $category['slug'];
+            $isActive = ($_POST['active'] ?? 'Yes') === 'Yes' ? 1 : 0;
+
+            $categoryModel->update($id, [
+                'name' => $_POST['name'],
+                'slug' => $slug,
+                'description' => $_POST['description'] ?? '',
+                'icon' => $_POST['icon'] ?? '',
+                'sort_order' => (int)($_POST['sort_order'] ?? 0),
+                'is_active' => $isActive,
+            ]);
+
+            $this->adminFlash('Kategori berhasil diperbarui.');
+            $this->redirect('/admin/categories');
+            return;
+        }
+
+        $this->view('admin/category_edit', ['category' => $category]);
     }
 
-    public function editFood($id) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $postData = Sanitize::array($_POST);
-            
-            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                $upload = Upload::image($_FILES['image'], '../public/images/foods');
-                if ($upload['status']) {
-                    $postData['image_name'] = $upload['filename'];
-                }
-            } else {
-                $postData['image_name'] = $postData['current_image'];
-            }
-            
-            $this->model('FoodModel')->update($id, $postData);
+    /**
+     * Legacy alias: addCategory → createCategory POST
+     */
+    public function addCategory()
+    {
+        $this->createCategory();
+    }
+
+    public function deleteCategory($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->redirect('/admin/categories');
+            return;
+        }
+
+        $categoryModel = $this->model('CategoryModel');
+        $categoryModel->delete($id);
+
+        $this->adminFlash('Kategori berhasil dihapus.');
+        $this->redirect('/admin/categories');
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // FOOD ITEMS
+    // ═══════════════════════════════════════════════════════════════
+
+    public function foods()
+    {
+        $this->checkAdmin();
+        $foodModel = $this->model('FoodModel');
+        $categoryModel = $this->model('CategoryModel');
+
+        $this->view('admin/foods', [
+            'foods' => $foodModel->getAll(),
+            'categories' => $categoryModel->getActive(),
+        ]);
+    }
+
+    /**
+     * Show food details
+     */
+    public function foodDetails($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
+        }
+
+        $foodModel = $this->model('FoodModel');
+        $product = $foodModel->getById($id);
+
+        if (!$product) {
+            $this->show404();
+        }
+
+        $this->view('admin/food_details', ['product' => $product]);
+    }
+
+    /**
+     * Show create food form (GET) or process creation (POST)
+     */
+    public function createFood()
+    {
+        $this->checkAdmin();
+        
+        $categoryModel = $this->model('CategoryModel');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->view('admin/food_create', ['categories' => $categoryModel->getActive()]);
+            return;
+        }
+
+        if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
             $this->redirect('/admin/foods');
+            return;
         }
-        $data['food'] = $this->model('FoodModel')->getById($id);
-        $data['categories'] = $this->model('CategoryModel')->getActive();
-        $this->view('admin/food_edit', $data);
-    }
-    
-    public function editCategory($id) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $this->model('CategoryModel')->update($id, Sanitize::array($_POST));
-            $this->redirect('/admin/categories');
+
+        $_POST = Sanitize::array($_POST);
+
+        // Handle image upload
+        $image = null;
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $image = Upload::image($_FILES['image'], 'food');
         }
-        $data['category'] = $this->model('CategoryModel')->getById($id);
-        $this->view('admin/category_edit', $data);
+
+        $foodModel = $this->model('FoodModel');
+        $foodModel->create([
+            'category_id' => $_POST['category_id'],
+            'name' => $_POST['name'],
+            'price' => (float)$_POST['price'],
+            'description' => $_POST['description'] ?? '',
+            'image' => $image,
+            'weight' => $_POST['weight'] ?? null,
+            'is_bestseller' => isset($_POST['is_bestseller']) ? 1 : 0,
+            'is_new' => isset($_POST['is_new']) ? 1 : 0,
+            'is_spicy' => isset($_POST['is_spicy']) ? 1 : 0,
+            'is_active' => isset($_POST['is_active']) ? (int)$_POST['is_active'] : 1,
+        ]);
+
+        $this->adminFlash('Menu berhasil ditambahkan.');
+        $this->redirect('/admin/foods');
     }
 
-    // Orders
-    public function orders() {
-        $data['orders'] = $this->model('OrderModel')->getAllOrders();
-        $this->view('admin/orders', $data);
+    /**
+     * Legacy alias: addFood → createFood
+     */
+    public function addFood()
+    {
+        $this->createFood();
     }
-    
-    public function orderDetails($id) {
-        $orderModel = $this->model('OrderModel');
-        
-        $data['order'] = null;
-        // Search $id in all orders
-        foreach($orderModel->getAllOrders() as $order) {
-            if ($order['order_id'] == $id) {
-                $data['order'] = $order;
-                break;
-            }
+
+    /**
+     * Show edit food form (GET) or process update (POST)
+     */
+    public function editFood($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
         }
-        
-        if (!$data['order']) {
+
+        $foodModel = $this->model('FoodModel');
+        $categoryModel = $this->model('CategoryModel');
+        $food = $foodModel->getById($id);
+
+        if (!$food) {
+            $this->show404();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
+                $this->redirect('/admin/foods');
+                return;
+            }
+
+            $_POST = Sanitize::array($_POST);
+
+            $image = $food['image'];
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $image = Upload::image($_FILES['image'], 'food');
+            }
+
+            $foodModel->update($id, [
+                'category_id' => $_POST['category_id'],
+                'name' => $_POST['name'],
+                'price' => (float)$_POST['price'],
+                'description' => $_POST['description'] ?? '',
+                'image' => $image,
+                'weight' => $_POST['weight'] ?? null,
+                'is_bestseller' => isset($_POST['is_bestseller']) ? 1 : 0,
+                'is_new' => isset($_POST['is_new']) ? 1 : 0,
+                'is_spicy' => isset($_POST['is_spicy']) ? 1 : 0,
+                'is_active' => isset($_POST['is_active']) ? (int)$_POST['is_active'] : 1,
+            ]);
+
+            $this->adminFlash('Menu berhasil diperbarui.');
+            $this->redirect('/admin/foods');
+            return;
+        }
+
+        $this->view('admin/food_edit', [
+            'product' => $food,
+            'food' => $food,
+            'categories' => $categoryModel->getActive(),
+        ]);
+    }
+
+    public function deleteFood($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->redirect('/admin/foods');
+            return;
+        }
+
+        $foodModel = $this->model('FoodModel');
+        $foodModel->delete($id);
+
+        $this->adminFlash('Menu berhasil dihapus.');
+        $this->redirect('/admin/foods');
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ORDERS
+    // ═══════════════════════════════════════════════════════════════
+
+    public function orders()
+    {
+        $this->checkAdmin();
+        $orderModel = $this->model('OrderModel');
+
+        $this->view('admin/orders', [
+            'orders' => $orderModel->getAllOrders(),
+        ]);
+    }
+
+    public function orderDetails($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
+        }
+
+        $orderModel = $this->model('OrderModel');
+        $order = $orderModel->getOrderById($id);
+
+        if (!$order) {
+            $this->show404();
+        }
+
+        $details = $orderModel->getOrderDetails($id);
+        $payment = $orderModel->getPaymentConfirmation($id);
+
+        $this->view('admin/order_details', [
+            'order' => $order,
+            'details' => $details,
+            'payment' => $payment,
+        ]);
+    }
+
+    public function updateOrderStatus($id = '')
+    {
+        $this->checkAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($id)) {
             $this->redirect('/admin/orders');
             return;
         }
 
-        $data['details'] = $orderModel->getOrderDetails($id);
-        $data['confirm'] = $orderModel->getConfirmOrder($id);
-        $data['order_id'] = $id;
-
-        $this->view('admin/order_details', $data);
-    }
-    
-    public function updateOrderStatus($id) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $status = Sanitize::string($_POST['status']);
-            $this->model('OrderModel')->updateOrderStatus($id, $status);
+        if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
             $this->redirect('/admin/orders');
+            return;
         }
+
+        $status = $_POST['status'] ?? '';
+        $validStatuses = ['confirmed', 'processing', 'delivering', 'finished', 'cancelled'];
+
+        if (!in_array($status, $validStatuses)) {
+            $this->redirect('/admin/orders');
+            return;
+        }
+
+        $orderModel = $this->model('OrderModel');
+
+        if ($status === 'cancelled') {
+            $orderModel->cancelOrder($id, $_POST['cancelled_reason'] ?? null);
+        } else {
+            $orderModel->updateOrderStatus($id, $status);
+        }
+
+        $this->adminFlash('Status pesanan berhasil diperbarui.');
+        $this->redirect('/admin/orderDetails/' . $id);
     }
 
-    // Users & Admins
-    public function users() {
-        // Need to add getAll to UserModel if not exists, skipping rigorous check for brevity assuming it does or will
-        $data['users'] = $this->model('UserModel')->getAll(); 
-        $this->view('admin/users', $data);
+    public function verifyPayment($id = '')
+    {
+        $this->checkAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($id)) {
+            $this->redirect('/admin/orders');
+            return;
+        }
+
+        if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
+            $this->redirect('/admin/orders');
+            return;
+        }
+
+        $action = $_POST['action'] ?? '';
+        $orderModel = $this->model('OrderModel');
+
+        if ($action === 'verify') {
+            $orderModel->updatePaymentStatus($id, 'verified', $_SESSION['user_id']);
+            $this->adminFlash('Pembayaran berhasil diverifikasi.');
+        } elseif ($action === 'reject') {
+            $orderModel->updatePaymentStatus($id, 'rejected', $_SESSION['user_id'], $_POST['rejection_reason'] ?? '');
+            $this->adminFlash('Pembayaran ditolak.');
+        }
+
+        $this->redirect('/admin/orders');
     }
 
-    public function admins() {
-        $data['admins'] = $this->model('AdminModel')->getAll();
-        $this->view('admin/admins', $data);
+    // ═══════════════════════════════════════════════════════════════
+    // USERS / CLIENTS
+    // ═══════════════════════════════════════════════════════════════
+
+    /**
+     * View route: admin/users — renders admin/users.php with $users variable
+     */
+    public function users()
+    {
+        $this->checkAdmin();
+        $userModel = $this->model('UserModel');
+
+        $this->view('admin/users', [
+            'users' => $userModel->getAllCustomersWithOrderCount(),
+        ]);
     }
-    
-    public function deleteUser($id) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $this->model('UserModel')->delete($id);
+
+    /**
+     * Alias: admin/clients → admin/users
+     */
+    public function clients()
+    {
+        $this->users();
+    }
+
+    /**
+     * View user/client details
+     */
+    public function userDetails($id = '')
+    {
+        $this->clientDetails($id);
+    }
+
+    public function clientDetails($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
+        }
+
+        $userModel = $this->model('UserModel');
+        $client = $userModel->findById($id);
+
+        if (!$client || $client['role'] !== 'customer') {
+            $this->show404();
+        }
+
+        $orderModel = $this->model('OrderModel');
+
+        $this->view('admin/user_details', [
+            'client' => $client,
+            'user' => $client,
+            'orders' => $orderModel->getOrdersByUser($id),
+        ]);
+    }
+
+    public function deleteClient($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
             $this->redirect('/admin/users');
+            return;
         }
+
+        $userModel = $this->model('UserModel');
+        $userModel->delete($id);
+
+        $this->adminFlash('Pelanggan berhasil dihapus.');
+        $this->redirect('/admin/users');
     }
-    
-    public function createAdmin() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $postData = Sanitize::array($_POST);
-            
-            // Check if admin already exists
-            if ($this->model('AdminModel')->findAdminByUsername($postData['username'])) {
-                // handle duplicate (just basic redirect for brevity in this MVP refactor structure)
+
+    // ═══════════════════════════════════════════════════════════════
+    // ADMINS
+    // ═══════════════════════════════════════════════════════════════
+
+    public function admins()
+    {
+        $this->checkAdmin();
+        $userModel = $this->model('UserModel');
+
+        $this->view('admin/admins', [
+            'admins' => $userModel->getAllAdmins(),
+        ]);
+    }
+
+    /**
+     * Show admin details
+     */
+    public function adminDetails($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
+        }
+
+        $userModel = $this->model('UserModel');
+        $admin = $userModel->findById($id);
+
+        if (!$admin || $admin['role'] !== 'admin') {
+            $this->show404();
+        }
+
+        $this->view('admin/admin_details', ['admin' => $admin]);
+    }
+
+    /**
+     * Show create admin form (GET) or process creation (POST)
+     */
+    public function createAdmin()
+    {
+        $this->checkAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->view('admin/admin_create');
+            return;
+        }
+
+        if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
+            $this->redirect('/admin/admins');
+            return;
+        }
+
+        $_POST = Sanitize::array($_POST);
+
+        $userModel = $this->model('UserModel');
+
+        if ($userModel->emailExists($_POST['email'])) {
+            $this->view('admin/admin_create', ['error' => 'Email sudah terdaftar.', 'old' => $_POST]);
+            return;
+        }
+        if ($userModel->usernameExists($_POST['username'])) {
+            $this->view('admin/admin_create', ['error' => 'Username sudah digunakan.', 'old' => $_POST]);
+            return;
+        }
+
+        $hashedPassword = password_hash($_POST['password'], PASSWORD_BCRYPT, ['cost' => 12]);
+        $userModel->create([
+            'full_name' => $_POST['full_name'],
+            'username' => $_POST['username'],
+            'email' => $_POST['email'],
+            'password' => $hashedPassword,
+            'role' => 'admin',
+        ]);
+
+        // Auto-verify admin email
+        $admin = $userModel->findByEmail($_POST['email']);
+        if ($admin) {
+            $userModel->verifyEmail($admin['id']);
+        }
+
+        $this->adminFlash('Admin berhasil ditambahkan.');
+        $this->redirect('/admin/admins');
+    }
+
+    /**
+     * Legacy alias: addAdmin → createAdmin
+     */
+    public function addAdmin()
+    {
+        $this->createAdmin();
+    }
+
+    /**
+     * Show edit admin form (GET) or process update (POST)
+     */
+    public function editAdmin($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
+        }
+
+        $userModel = $this->model('UserModel');
+        $admin = $userModel->findById($id);
+
+        if (!$admin || $admin['role'] !== 'admin') {
+            $this->show404();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
                 $this->redirect('/admin/admins');
                 return;
             }
-            
-            $postData['password'] = password_hash($postData['password'], PASSWORD_BCRYPT);
-            $this->model('AdminModel')->create($postData);
-            $this->redirect('/admin/admins');
-        }
-        $this->view('admin/admin_create');
-    }
 
-    public function editAdmin($id) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $postData = Sanitize::array($_POST);
-            
-            $this->model('AdminModel')->updateProfile($id, $postData);
-            
-            // If logged in admin edits own profile, update session
-            if ($id == $_SESSION['admin_id']) $_SESSION['admin_fullname'] = $postData['full_name'];
-            if ($id == $_SESSION['admin_id']) $_SESSION['admin_username'] = $postData['username'];
-            $this->redirect('/admin/admins');
-        }
-        $data['admin'] = $this->model('AdminModel')->getById($id);
-        $this->view('admin/admin_edit', $data);
-    }
-    
-    public function editAdminPassword($id) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $postData = Sanitize::array($_POST);
-            if ($postData['new_password'] === $postData['confirm_password']) {
-                $hash = password_hash($postData['new_password'], PASSWORD_BCRYPT);
-                $this->model('AdminModel')->updatePassword($id, $hash);
+            $_POST = Sanitize::array($_POST);
+
+            // Email conflict check
+            if ($userModel->emailExists($_POST['email'], $id)) {
+                $this->view('admin/admin_edit', ['admin' => $admin, 'error' => 'Email sudah digunakan akun lain.']);
+                return;
             }
+            if ($userModel->usernameExists($_POST['username'], $id)) {
+                $this->view('admin/admin_edit', ['admin' => $admin, 'error' => 'Username sudah digunakan akun lain.']);
+                return;
+            }
+
+            $userModel->updateProfile($id, [
+                'full_name' => $_POST['full_name'],
+                'username' => $_POST['username'],
+                'email' => $_POST['email'],
+                'phone' => $_POST['phone'] ?? null,
+                'address' => $_POST['address'] ?? null,
+            ]);
+
+            $this->adminFlash('Profil admin berhasil diperbarui.');
             $this->redirect('/admin/admins');
+            return;
         }
-        $data['admin'] = $this->model('AdminModel')->getById($id);
-        $this->view('admin/admin_password', $data);
+
+        $this->view('admin/admin_edit', ['admin' => $admin]);
     }
 
-    public function deleteAdmin($id) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $this->model('AdminModel')->delete($id);
+    /**
+     * Show edit admin password form (GET) or process update (POST)
+     */
+    public function editAdminPassword($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
+        }
+
+        $userModel = $this->model('UserModel');
+        $admin = $userModel->findById($id);
+
+        if (!$admin || $admin['role'] !== 'admin') {
+            $this->show404();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
+                $this->redirect('/admin/admins');
+                return;
+            }
+
+            $newPassword = $_POST['new_password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+
+            if (strlen($newPassword) < 8) {
+                $this->view('admin/admin_password', ['admin' => $admin, 'error' => 'Kata sandi minimal 8 karakter.']);
+                return;
+            }
+
+            if ($newPassword !== $confirmPassword) {
+                $this->view('admin/admin_password', ['admin' => $admin, 'error' => 'Konfirmasi kata sandi tidak cocok.']);
+                return;
+            }
+
+            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 12]);
+            $userModel->updatePassword($id, $hashedPassword);
+            $userModel->setRememberToken($id, null);
+
+            $this->adminFlash('Kata sandi admin berhasil diubah.');
             $this->redirect('/admin/admins');
+            return;
         }
+
+        $this->view('admin/admin_password', ['admin' => $admin]);
     }
 
-    // Contacts & Reviews
-    public function contacts() {
-        $data['contacts'] = $this->model('ContactModel')->getAll();
-        $this->view('admin/contacts', $data); // Placeholder
-    }
-    
-    public function reviews() {
-        $data['reviews'] = $this->model('ReviewModel')->getAll();
-        $this->view('admin/reviews', $data); // Placeholder
-    }
-
-    public function deleteCategory($id) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $this->model('CategoryModel')->delete($id);
-            $this->redirect('/admin/categories');
+    public function deleteAdmin($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id) || $id === $_SESSION['user_id']) {
+            $this->redirect('/admin/admins');
+            return;
         }
+
+        $userModel = $this->model('UserModel');
+        $userModel->delete($id);
+
+        $this->adminFlash('Admin berhasil dihapus.');
+        $this->redirect('/admin/admins');
     }
 
-    public function deleteFood($id) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $this->model('FoodModel')->delete($id);
-            $this->redirect('/admin/foods');
+    // ═══════════════════════════════════════════════════════════════
+    // REVIEWS
+    // ═══════════════════════════════════════════════════════════════
+
+    public function reviews()
+    {
+        $this->checkAdmin();
+        $reviewModel = $this->model('ReviewModel');
+
+        $this->view('admin/reviews', [
+            'reviews' => $reviewModel->getAll(),
+        ]);
+    }
+
+    public function reviewDetails($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
         }
+
+        $reviewModel = $this->model('ReviewModel');
+        $review = $reviewModel->getById($id);
+
+        if (!$review) {
+            $this->show404();
+        }
+
+        $this->view('admin/review_details', ['review' => $review]);
     }
 
-    public function deleteContact($id) {
-         if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $this->model('ContactModel')->delete($id);
+    public function updateReviewStatus($id = '')
+    {
+        $this->checkAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($id)) {
+            $this->redirect('/admin/reviews');
+            return;
+        }
+
+        if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
+            $this->redirect('/admin/reviews');
+            return;
+        }
+
+        $status = $_POST['status'] ?? '';
+        if (!in_array($status, ['approved', 'rejected'])) {
+            $this->redirect('/admin/reviews');
+            return;
+        }
+
+        $reviewModel = $this->model('ReviewModel');
+        $reviewModel->updateStatus($id, $status);
+
+        $this->adminFlash('Status review berhasil diperbarui.');
+        $this->redirect('/admin/reviews');
+    }
+
+    /**
+     * Aliases for review routes used in views
+     */
+    public function updateTestimonialStatus($id = '')
+    {
+        $this->updateReviewStatus($id);
+    }
+
+    public function deleteTestimonial($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/admin/reviews');
+            return;
+        }
+
+        if (!CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
+            $this->redirect('/admin/reviews');
+            return;
+        }
+
+        $reviewModel = $this->model('ReviewModel');
+        $reviewModel->delete($id);
+
+        $this->adminFlash('Testimoni berhasil dihapus.');
+        $this->redirect('/admin/reviews');
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // CONTACTS
+    // ═══════════════════════════════════════════════════════════════
+
+    public function contacts()
+    {
+        $this->checkAdmin();
+        $contactModel = $this->model('ContactModel');
+
+        $this->view('admin/contacts', [
+            'contacts' => $contactModel->getAll(),
+        ]);
+    }
+
+    public function contactDetails($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
+            $this->show404();
+        }
+
+        $contactModel = $this->model('ContactModel');
+        $contact = $contactModel->getById($id);
+
+        if (!$contact) {
+            $this->show404();
+        }
+
+        // Mark as read
+        if (!$contact['is_read']) {
+            $contactModel->markRead($id);
+        }
+
+        $this->view('admin/contact_details', ['contact' => $contact]);
+    }
+
+    public function deleteContact($id = '')
+    {
+        $this->checkAdmin();
+        if (empty($id)) {
             $this->redirect('/admin/contacts');
+            return;
         }
-    }
 
-    public function deleteReview($id) {
-         if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $this->model('ReviewModel')->delete($id);
-            $this->redirect('/admin/reviews');
-        }
-    }
+        $contactModel = $this->model('ContactModel');
+        $contactModel->delete($id);
 
-    public function updateReviewStatus($id) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && CSRF::verifyToken($_POST['csrf_token'] ?? '')) {
-            $status = $_POST['status'] ?? 'No';
-            $this->model('ReviewModel')->updateStatus($id, $status);
-            $this->redirect('/admin/reviews');
-        }
+        $this->adminFlash('Pesan berhasil dihapus.');
+        $this->redirect('/admin/contacts');
     }
 }
