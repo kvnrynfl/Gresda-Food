@@ -64,8 +64,13 @@ class App
     private function parseUrl()
     {
         if (isset($_GET['url'])) {
-            $url = rtrim($_GET['url'], '/');
+            $url = $_GET['url'];
+            $url = ltrim($url, '/');
+            $url = rtrim($url, '/');
             $url = filter_var($url, FILTER_SANITIZE_URL);
+            if (empty($url)) {
+                return [];
+            }
             return explode('/', $url);
         }
         return [];
