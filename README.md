@@ -52,14 +52,15 @@ Gresda Food is a modern, fully-featured e-commerce web application designed for 
 2. **Server Setup**:
    - Place the project folder in your local server directory (e.g., `htdocs` for XAMPP or `www` for Laragon).
    - Ensure your local server is running PHP 8.0 or higher.
+   - **For Nginx users**: Copy `nginx.conf` from the project root to your Nginx sites-enabled directory (e.g., `C:\laragon\etc\nginx\sites-enabled\gresda-food.test.conf` for Laragon). Restart Nginx after copying.
+   - **For Apache users**: The `.htaccess` files are already included and should work out of the box with `mod_rewrite` enabled.
 3. **Database Setup**:
    - Create a new MySQL database named `gresda-food`.
    - Import the provided SQL dump file (if available in `/gresda-food.sql`).
 4. **Configuration**:
-   - Navigate to `app/config/config.php` and update the database credentials (`DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`) as needed.
-   - Update `BASEURL` in `config.php` to match your local development URL (e.g., `http://localhost/Gresda-Food/public`).
+   - Copy `.env.example` to `.env` and update the database credentials (`DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`) and `APP_URL` as needed.
 5. **Run**:
-   - Access the application via your browser at your configured `BASEURL`.
+   - Access the application via your browser at your configured `APP_URL`.
 
 ---
 
